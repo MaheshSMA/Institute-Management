@@ -2,6 +2,7 @@ const express = require('express');
 const {
   getAllFaculty,
   getFacultyById,
+  getAssignedStudents,
   createFaculty,
 } = require('../controllers/facultyController');
 
@@ -13,4 +14,5 @@ router.get('/:id', getFacultyById);
 
 router.post('/', createFaculty);
 
+router.get("/:facId/students", getAssignedStudents);
 module.exports = router;

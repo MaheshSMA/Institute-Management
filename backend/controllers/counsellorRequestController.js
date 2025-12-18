@@ -128,7 +128,6 @@ const updateRequestStatus = async (req, res) => {
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    // 1. Get request details
     const [reqRows] = await connection.query(
       `SELECT * FROM COUNSELLOR_REQUEST WHERE Request_id = ? FOR UPDATE`,
       [requestId]
@@ -142,14 +141,12 @@ const updateRequestStatus = async (req, res) => {
 
     const request = reqRows[0];
 
-    // If already processed, avoid re-doing workflows
     if (request.Status !== 'Pending') {
       await connection.rollback();
       connection.release();
       return res.status(400).json({ error: 'Request already processed' });
     }
 
-    // 2. Update the request status
     await connection.query(
       `UPDATE COUNSELLOR_REQUEST
        SET Status = ?
@@ -157,18 +154,16 @@ const updateRequestStatus = async (req, res) => {
       [status, requestId]
     );
 
-    // 3. If rejected, just commit and return
     if (status === 'Rejected') {
       await connection.commit();
       connection.release();
       return res.json({ message: 'Request rejected successfully' });
     }
 
-    // 4. If approved, handle workflows
     const { Type, Student_id, Fac_id, Pts_earned } = request;
 
     if (Type === 'Counsellor Join') {
-      // Assign counsellor to student
+  
       await connection.query(
         `UPDATE STUDENT
          SET Supervised_by = ?
@@ -176,7 +171,7 @@ const updateRequestStatus = async (req, res) => {
         [Fac_id, Student_id]
       );
     } else if (Type === 'Activity Point') {
-      // Add activity points to student
+  
       const pointsToAdd = Pts_earned || 0;
 
       await connection.query(

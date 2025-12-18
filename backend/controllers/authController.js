@@ -1,4 +1,6 @@
-// backend/controllers/authController.js
+
+
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
@@ -6,7 +8,9 @@ const db = require('../config/db');
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
-// Helper to generate token
+
+
+
 const generateToken = (payload) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
@@ -16,6 +20,14 @@ const generateToken = (payload) => {
  * Body: { student_name, usn, dob, year, dept_code, student_email, password }
  */
 const registerStudent = async (req, res) => {
+  console.log("reached auth rote")
+  console.log(req.body);
+
+  if (!req.body || Object.keys(req.body).length === 0) {
+    console.log(req.body);
+    return res.status(400).json({ error: 'Request body is required' });
+  }
+
   const {
     student_name,
     usn,
@@ -37,7 +49,9 @@ const registerStudent = async (req, res) => {
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    // 1. Create student
+    
+    
+    
     const [studentResult] = await connection.query(
       `INSERT INTO STUDENT
        (Student_name, USN, DOB, Year, Dept_code, Student_email, Activity_pts)
@@ -47,10 +61,14 @@ const registerStudent = async (req, res) => {
 
     const studentId = studentResult.insertId;
 
-    // 2. Hash password
+    
+    
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 3. Create login record
+    
+    
+    
     await connection.query(
       `INSERT INTO LOGIN (Email, Password, Role, Ref_id)
        VALUES (?, ?, 'Student', ?)`,
@@ -104,7 +122,9 @@ const registerFaculty = async (req, res) => {
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    // 1. Create faculty
+    
+    
+    
     const [facResult] = await connection.query(
       `INSERT INTO FACULTY
        (Fac_name, Fac_email, Dept_code, Is_Counsellor, Is_Club_Coordinator)
@@ -114,10 +134,14 @@ const registerFaculty = async (req, res) => {
 
     const facId = facResult.insertId;
 
-    // 2. Hash password
+    
+    
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 3. Create login record
+    
+    
+    
     await connection.query(
       `INSERT INTO LOGIN (Email, Password, Role, Ref_id)
        VALUES (?, ?, 'Faculty', ?)`,
@@ -165,7 +189,9 @@ const registerAdmin = async (req, res) => {
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    // 1. Create admin in ADMIN table
+    
+    
+    
     const [adminResult] = await connection.query(
       `INSERT INTO ADMIN (Admin_name, Admin_email, Password)
        VALUES (?, ?, '')`,
@@ -174,10 +200,14 @@ const registerAdmin = async (req, res) => {
 
     const adminId = adminResult.insertId;
 
-    // 2. Hash password for LOGIN table
+    
+    
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 3. Create LOGIN entry
+    
+    
+    
     await connection.query(
       `INSERT INTO LOGIN (Email, Password, Role, Ref_id)
        VALUES (?, ?, 'Admin', ?)`,
@@ -212,33 +242,42 @@ const registerAdmin = async (req, res) => {
  */
 const login = async (req, res) => {
   const { email, password } = req.body;
-
+  
   if (!email || !password) {
     return res
-      .status(400)
-      .json({ error: 'email and password are required' });
+    .status(400)
+    .json({ error: 'email and password are required' });
   }
-
+  
   try {
-    // 1. Find user in LOGIN table
+    
+    console.log("reached student login auth route");
+    
+    
     const [rows] = await db.query(
       `SELECT * FROM LOGIN WHERE Email = ?`,
       [email]
     );
-
+    
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
-
+    
     const user = rows[0];
-
-    // 2. Compare password
+    
+    
+    
+    
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch) {
+      console.log(password);
+      console.log(user.Password);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // 3. Generate token
+    
+    
+    
     const token = generateToken({
       loginId: user.Login_id,
       role: user.Role,

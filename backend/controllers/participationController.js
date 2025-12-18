@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// ✅ Add participation
 const addParticipation = async (req, res) => {
   try {
     const {
@@ -44,7 +43,6 @@ const addParticipation = async (req, res) => {
   }
 };
 
-// ✅ Get all participants of an event
 const getParticipantsByEvent = async (req, res) => {
   const { eventId } = req.params;
 
@@ -64,7 +62,6 @@ const getParticipantsByEvent = async (req, res) => {
   }
 };
 
-// ✅ Get all events of a student
 const getEventsByStudent = async (req, res) => {
   const { studentId } = req.params;
 

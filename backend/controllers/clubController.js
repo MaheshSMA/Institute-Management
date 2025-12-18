@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// ✅ Create club
 const createClub = async (req, res) => {
   try {
     const { club_name, description, announcements, coordinator_id } = req.body;
@@ -27,7 +26,6 @@ const createClub = async (req, res) => {
   }
 };
 
-// ✅ Get all clubs
 const getAllClubs = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM CLUB');
@@ -38,7 +36,6 @@ const getAllClubs = async (req, res) => {
   }
 };
 
-// ✅ Get club by id
 const getClubById = async (req, res) => {
   const { id } = req.params;
 

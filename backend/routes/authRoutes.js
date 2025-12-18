@@ -10,7 +10,9 @@ const {
 const router = express.Router();
 
 // Registration
+console.log("reached auth rote")
 router.post('/register-student', registerStudent);
+console.log("not here")
 router.post('/register-faculty', registerFaculty);
 router.post('/register-admin', registerAdmin); // optional / for initial setup
 

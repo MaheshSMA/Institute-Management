@@ -1,7 +1,5 @@
-// backend/controllers/studentController.js
 const db = require('../config/db');
 
-// GET all students
 const getAllStudents = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM STUDENT');
@@ -12,7 +10,6 @@ const getAllStudents = async (req, res) => {
   }
 };
 
-// GET student by id
 const getStudentById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -32,7 +29,6 @@ const getStudentById = async (req, res) => {
   }
 };
 
-// CREATE / register a new student
 const createStudent = async (req, res) => {
   try {
     const {
@@ -64,7 +60,6 @@ const createStudent = async (req, res) => {
     });
   } catch (err) {
     console.error('Error creating student:', err);
-    // basic duplicate handling
     if (err.code === 'ER_DUP_ENTRY') {
       return res
         .status(400)

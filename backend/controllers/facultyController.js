@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// ✅ GET all faculty
 const getAllFaculty = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM FACULTY');
@@ -11,7 +10,6 @@ const getAllFaculty = async (req, res) => {
   }
 };
 
-// ✅ GET faculty by ID
 const getFacultyById = async (req, res) => {
   const { id } = req.params;
 
@@ -32,7 +30,24 @@ const getFacultyById = async (req, res) => {
   }
 };
 
-// ✅ CREATE faculty
+const getAssignedStudents = async (req, res) => {
+  const { facId } = req.params;
+
+  try {
+    const [students] = await db.query(
+      `SELECT Student_id, Student_name, USN, Dept_code, Year, Activity_pts
+       FROM STUDENT
+       WHERE Supervised_by = ?`,
+      [facId]
+    );
+
+    res.json(students);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch assigned students" });
+  }
+};
+
 const createFaculty = async (req, res) => {
   try {
     const {
@@ -75,6 +90,7 @@ const createFaculty = async (req, res) => {
 
 module.exports = {
   getAllFaculty,
+  getAssignedStudents,
   getFacultyById,
   createFaculty,
 };

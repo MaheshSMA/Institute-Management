@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// ✅ Create event
 const createEvent = async (req, res) => {
   try {
     const { event_name, description, duration, club_id } = req.body;
@@ -27,7 +26,6 @@ const createEvent = async (req, res) => {
   }
 };
 
-// ✅ Get all events
 const getAllEvents = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM EVENT');
@@ -38,7 +36,6 @@ const getAllEvents = async (req, res) => {
   }
 };
 
-// ✅ Get all events of a club
 const getEventsByClub = async (req, res) => {
   const { clubId } = req.params;
 
