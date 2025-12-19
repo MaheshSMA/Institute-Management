@@ -39,6 +39,7 @@ function StudentLogin() {
         <input
           type="email"
           placeholder="Student Email"
+          pattern="^[a-zA-Z0-9._%+-]+@rvce\.edu\.in$"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         /><br />

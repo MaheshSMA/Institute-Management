@@ -13,9 +13,13 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import StudentRequests from "./pages/student/StudentRequests";
 import FacultyRequests from "./pages/faculty/FacultyRequests";
 import FacultyStudents from "./pages/faculty/FacultyStudents";
+import FacultyClubEvents from "./pages/faculty/FacultyClubEvents";
 import StudentEvents from "./pages/student/StudentEvents";
 import AdminReports from "./pages/admin/AdminReports";
 import AdminStudents from "./pages/admin/AdminStudents";
+import StudentSignup from "./pages/signup/StudentSignup";
+import FacultySignup from "./pages/signup/FacultySignup";
+import AdminSignup from "./pages/signup/AdminSignup";
 
 function App() {
   return (
@@ -33,9 +37,17 @@ function App() {
       <Route path="/student/requests" element={<StudentRequests />} />
       <Route path="/faculty/requests" element={<FacultyRequests />} />
       <Route path="/faculty/students" element={<FacultyStudents />} />
+      <Route path="/faculty/club-events" element={<FacultyClubEvents />} />
+
       <Route path="/student/events" element={<StudentEvents />} />
       <Route path="/admin/reports" element={<AdminReports />} />
       <Route path="/admin/students" element={<AdminStudents />} />
+
+      {/* signup */}
+      <Route path="/signup/student" element={<StudentSignup />} />
+      <Route path="/signup/faculty" element={<FacultySignup />} />
+      <Route path="/signup/admin" element={<AdminSignup />} />
+
 
     </Routes>
   );

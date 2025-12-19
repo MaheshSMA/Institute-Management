@@ -16,6 +16,11 @@ function FacultyDashboard() {
         View Requests
       </button>
 
+      <button onClick={() => navigate("/faculty/club-events")}>
+        Manage Club Events
+      </button>
+
+
     </div>
   );
 }
