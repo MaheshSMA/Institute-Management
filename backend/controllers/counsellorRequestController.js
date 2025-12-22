@@ -12,8 +12,9 @@ const db = require('../config/db');
  */
 const createRequest = async (req, res) => {
   try {
+    console.log(req.user);
+    const studentId = req.user.refId;
     const {
-      student_id,
       fac_id,
       type,
       reason,
@@ -21,7 +22,7 @@ const createRequest = async (req, res) => {
       pts_earned = 0,
     } = req.body;
 
-    if (!student_id || !fac_id || !type) {
+    if (!studentId || !fac_id || !type) {
       return res.status(400).json({
         error: 'student_id, fac_id and type are required',
       });
@@ -37,7 +38,7 @@ const createRequest = async (req, res) => {
       `INSERT INTO COUNSELLOR_REQUEST
        (Student_id, Fac_id, Status, Reason, Document_path, Type, Pts_earned)
        VALUES (?, ?, 'Pending', ?, ?, ?, ?)`,
-      [student_id, fac_id, reason || null, document_path || null, type, pts_earned]
+      [studentId, fac_id, reason || null, document_path || null, type, pts_earned]
     );
 
     res.status(201).json({
@@ -75,33 +76,31 @@ const getRequestsByStudent = async (req, res) => {
  * GET /api/requests/faculty/:facId?status=Pending&type=Activity%20Point
  */
 const getRequestsByFaculty = async (req, res) => {
-  const { facId } = req.params;
+  const facId = req.user.refId;
   const { status, type } = req.query;
 
-  try {
-    let query = `SELECT * FROM COUNSELLOR_REQUEST WHERE Fac_id = ?`;
-    const params = [facId];
+  let query = `SELECT cr.*, s.Student_name, s.USN, s.Dept_code
+               FROM COUNSELLOR_REQUEST cr
+               JOIN STUDENT s ON cr.Student_id = s.Student_id
+               WHERE cr.Fac_id = ?`;
+  const params = [facId];
 
-    if (status) {
-      query += ` AND Status = ?`;
-      params.push(status);
-    }
-
-    if (type) {
-      query += ` AND Type = ?`;
-      params.push(type);
-    }
-
-    query += ` ORDER BY Created_At DESC`;
-
-    const [rows] = await db.query(query, params);
-
-    res.json(rows);
-  } catch (err) {
-    console.error('Error fetching faculty requests:', err);
-    res.status(500).json({ error: 'Server error' });
+  if (status) {
+    query += ` AND cr.Status = ?`;
+    params.push(status);
   }
+
+  if (type) {
+    query += ` AND cr.Type = ?`;
+    params.push(type);
+  }
+
+  query += ` ORDER BY cr.Created_At DESC`;
+
+  const [rows] = await db.query(query, params);
+  res.json(rows);
 };
+
 
 /**
  * PATCH /api/requests/:requestId/status
@@ -115,6 +114,7 @@ const getRequestsByFaculty = async (req, res) => {
 const updateRequestStatus = async (req, res) => {
   const { requestId } = req.params;
   const { status } = req.body;
+  const facId = req.user.refId;
 
   if (!status || !['Approved', 'Rejected'].includes(status)) {
     return res.status(400).json({
@@ -129,8 +129,10 @@ const updateRequestStatus = async (req, res) => {
     await connection.beginTransaction();
 
     const [reqRows] = await connection.query(
-      `SELECT * FROM COUNSELLOR_REQUEST WHERE Request_id = ? FOR UPDATE`,
-      [requestId]
+      `SELECT * FROM COUNSELLOR_REQUEST
+        WHERE Request_id = ? AND Fac_id = ?
+        FOR UPDATE`,
+      [requestId,facId]
     );
 
     if (reqRows.length === 0) {
@@ -177,7 +179,7 @@ const updateRequestStatus = async (req, res) => {
       await connection.query(
         `UPDATE STUDENT
          SET Activity_pts = Activity_pts + ?
-         WHERE Student_id = ?`,
+         WHERE Student_id = ? AND Supervised_by = ?`,
         [pointsToAdd, Student_id]
       );
     }

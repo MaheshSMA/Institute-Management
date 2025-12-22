@@ -31,7 +31,8 @@ const getFacultyById = async (req, res) => {
 };
 
 const getAssignedStudents = async (req, res) => {
-  const { facId } = req.params;
+  const facId = req.user.refId;
+  console.log("reached get student");
 
   try {
     const [students] = await db.query(

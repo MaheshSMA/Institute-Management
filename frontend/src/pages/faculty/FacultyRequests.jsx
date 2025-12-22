@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import API from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 
 function FacultyRequests() {
   const [requests, setRequests] = useState([]);
   const navigate = useNavigate();
-  const facId = localStorage.getItem("ref_id");
 
   useEffect(() => {
-    if (!facId) {
+    // token presence check is enough
+    if (!localStorage.getItem("token")) {
       navigate("/login/faculty");
       return;
     }
@@ -17,7 +17,8 @@ function FacultyRequests() {
 
   const fetchRequests = async () => {
     try {
-      const res = await API.get(`/requests/faculty/${facId}`);
+      // 🔐 faculty identity derived from JWT (backend)
+      const res = await API.get("/requests/faculty");
       setRequests(res.data);
     } catch (err) {
       console.error(err);
@@ -29,7 +30,7 @@ function FacultyRequests() {
     try {
       await API.patch(`/requests/${requestId}/status`, { status });
       alert(`Request ${status}`);
-      fetchRequests(); // refresh
+      fetchRequests();
     } catch (err) {
       console.error(err);
       alert("Failed to update request");
@@ -37,16 +38,16 @@ function FacultyRequests() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
       <h1>Faculty Requests</h1>
 
       {requests.length === 0 ? (
         <p>No requests assigned.</p>
       ) : (
-        <table style={tableStyle}>
+        <table>
           <thead>
             <tr>
-              <th>Student ID</th>
+              <th>Student</th>
               <th>Type</th>
               <th>Reason</th>
               <th>Points</th>
@@ -58,13 +59,13 @@ function FacultyRequests() {
           <tbody>
             {requests.map((req) => (
               <tr key={req.Request_id}>
-                <td>{req.Student_id}</td>
+                <td>
+                  {req.Student_name} ({req.USN})
+                </td>
                 <td>{req.Type}</td>
                 <td>{req.Reason}</td>
                 <td>{req.Pts_earned || "-"}</td>
-                <td style={statusStyle(req.Status)}>
-                  {req.Status}
-                </td>
+                <td>{req.Status}</td>
                 <td>
                   {req.Status === "Pending" ? (
                     <>
@@ -74,7 +75,7 @@ function FacultyRequests() {
                         }
                       >
                         Approve
-                      </button>{" "}
+                      </button>
                       <button
                         onClick={() =>
                           updateStatus(req.Request_id, "Rejected")
@@ -84,7 +85,7 @@ function FacultyRequests() {
                       </button>
                     </>
                   ) : (
-                    "—"
+                    "-"
                   )}
                 </td>
               </tr>
@@ -93,29 +94,11 @@ function FacultyRequests() {
         </table>
       )}
 
-      <br />
       <button onClick={() => navigate("/faculty/dashboard")}>
         Back to Dashboard
       </button>
     </div>
   );
 }
-
-/* ---------- styles ---------- */
-
-const tableStyle = {
-  width: "100%",
-  borderCollapse: "collapse",
-};
-
-const statusStyle = (status) => ({
-  fontWeight: "bold",
-  color:
-    status === "Approved"
-      ? "green"
-      : status === "Rejected"
-      ? "red"
-      : "orange",
-});
 
 export default FacultyRequests;

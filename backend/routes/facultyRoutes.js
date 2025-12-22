@@ -5,14 +5,16 @@ const {
   getAssignedStudents,
   createFaculty,
 } = require('../controllers/facultyController');
+const { protect, requireRole } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get('/', getAllFaculty);
+router.get('/',protect, getAllFaculty);
 
-router.get('/:id', getFacultyById);
+router.get("/my-students",protect,requireRole("Faculty"), getAssignedStudents);
+
+router.get('/:id',protect,requireRole("Faculty"), getFacultyById);
 
 router.post('/', createFaculty);
 
-router.get("/:facId/students", getAssignedStudents);
 module.exports = router;

@@ -3,17 +3,21 @@ const {
   createEvent,
   getAllEvents,
   getEventsByClub,
+  getMyClubEvents,
   updateEvent,
 } = require('../controllers/eventController');
+const { protect, requireRole } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.post('/', createEvent);
+router.post('/',protect,requireRole("Faculty"), createEvent);
 
-router.get('/', getAllEvents);
+router.get('/',protect, getAllEvents);
 
-router.get('/club/:clubId', getEventsByClub);
+router.get("/my-club", protect, requireRole("Faculty"), getMyClubEvents);
 
-router.put("/:eventId", updateEvent);
+// router.get('/club/:clubId', getEventsByClub);
+
+router.put("/:eventId", protect, requireRole("Faculty"),  updateEvent);
 
 module.exports = router;

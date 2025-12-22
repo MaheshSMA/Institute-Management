@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import API from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +18,7 @@ function FacultyStudents() {
 
   const fetchStudents = async () => {
     try {
-      const res = await API.get(`/faculty/${facId}/students`);
+      const res = await API.get(`/faculty/my-students`);
       setStudents(res.data);
     } catch (err) {
       console.error(err);

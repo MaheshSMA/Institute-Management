@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import API from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -41,9 +41,15 @@ function StudentDashboard() {
       {/* PROFILE CARD */}
       <div style={cardStyle}>
         <h3>{student.Student_name}</h3>
-        <p><b>USN:</b> {student.USN}</p>
-        <p><b>Department:</b> {student.Dept_code}</p>
-        <p><b>Year:</b> {student.Year}</p>
+        <p>
+          <b>USN:</b> {student.USN}
+        </p>
+        <p>
+          <b>Department:</b> {student.Dept_code}
+        </p>
+        <p>
+          <b>Year:</b> {student.Year}
+        </p>
         <p>
           <b>Counsellor:</b>{" "}
           {student.Supervised_by ? student.Supervised_by : "Not Assigned"}
@@ -56,13 +62,14 @@ function StudentDashboard() {
         <h1>{student.Activity_pts}</h1>
       </div>
 
-      <button onClick={() => navigate("/student/events")}>
-        View Events
-      </button>
-
+      <button onClick={() => navigate("/student/events")}>View Events</button>
 
       <button onClick={() => navigate("/student/requests")}>
         View My Requests
+      </button>
+
+      <button onClick={() => navigate("/student/faculty")}>
+        Request Counsellor
       </button>
 
       <button onClick={handleLogout}>Logout</button>

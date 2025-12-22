@@ -1,15 +1,9 @@
-
-
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-
-
-
 
 const generateToken = (payload) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
@@ -61,14 +55,8 @@ const registerStudent = async (req, res) => {
 
     const studentId = studentResult.insertId;
 
-    
-    
-    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    
-    
-    
     await connection.query(
       `INSERT INTO LOGIN (Email, Password, Role, Ref_id)
        VALUES (?, ?, 'Student', ?)`,
@@ -122,9 +110,6 @@ const registerFaculty = async (req, res) => {
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    
-    
-    
     const [facResult] = await connection.query(
       `INSERT INTO FACULTY
        (Fac_name, Fac_email, Dept_code, Is_Counsellor, Is_Club_Coordinator)
@@ -134,14 +119,8 @@ const registerFaculty = async (req, res) => {
 
     const facId = facResult.insertId;
 
-    
-    
-    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    
-    
-    
     await connection.query(
       `INSERT INTO LOGIN (Email, Password, Role, Ref_id)
        VALUES (?, ?, 'Faculty', ?)`,
@@ -189,9 +168,6 @@ const registerAdmin = async (req, res) => {
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    
-    
-    
     const [adminResult] = await connection.query(
       `INSERT INTO ADMIN (Admin_name, Admin_email, Password)
        VALUES (?, ?, '')`,
@@ -200,14 +176,8 @@ const registerAdmin = async (req, res) => {
 
     const adminId = adminResult.insertId;
 
-    
-    
-    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    
-    
-    
     await connection.query(
       `INSERT INTO LOGIN (Email, Password, Role, Ref_id)
        VALUES (?, ?, 'Admin', ?)`,

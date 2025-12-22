@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const admin = require("../controllers/adminController");
+const { protect, requireRole } = require("../middleware/authMiddleware");
 
 router.get("/students", admin.getAllStudents);
 router.get("/faculty", admin.getAllFaculty);

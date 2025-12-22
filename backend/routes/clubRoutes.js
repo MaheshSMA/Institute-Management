@@ -4,6 +4,7 @@ const {
   getAllClubs,
   getClubById,
 } = require('../controllers/clubController');
+const { protect, requireRole } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 

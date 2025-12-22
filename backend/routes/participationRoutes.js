@@ -4,7 +4,7 @@ const {
   getParticipantsByEvent,
   getEventsByStudent,
 } = require('../controllers/participationController');
-
+const { protect, requireRole } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 

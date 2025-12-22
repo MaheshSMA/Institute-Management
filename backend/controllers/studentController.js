@@ -47,14 +47,6 @@ const createStudent = async (req, res) => {
         .json({ error: 'student_name, usn and dept_code are required' });
     }
 
-    const rvceEmailRegex = /^[a-zA-Z0-9._%+-]+@rvce\.edu\.in$/;
-
-  if (!rvceEmailRegex.test(student_email)) {
-    return res.status(400).json({
-      error: 'Only @rvce.edu.in email addresses are allowed',
-    });
-  }
-
     const [result] = await db.query(
       `INSERT INTO STUDENT 
        (Student_name, USN, DOB, Year, Dept_code, Student_email, Activity_pts)

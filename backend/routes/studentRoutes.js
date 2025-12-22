@@ -5,10 +5,11 @@ const {
   getStudentById,
   createStudent,
 } = require('../controllers/studentController');
+const { protect, requireRole } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get('/', getAllStudents);
+router.get('/',protect,requireRole("Admin"), getAllStudents);
 
 router.get('/:id', getStudentById);
 
