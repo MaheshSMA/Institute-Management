@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/axios";
 
-function AdminStudents() {
-  const [students, setStudents] = useState([]);
+function AdminFaculty() {
+  const [faculty, setFaculty] = useState([]);
 
   useEffect(() => {
-    API.get("/admin/students").then(res => setStudents(res.data));
+    API.get("/admin/faculty").then(res => setFaculty(res.data));
   }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
       <h1 className="text-3xl font-semibold text-blue-900 mb-6">
-        All Students
+        All Faculty
       </h1>
 
       <div className="bg-white border rounded-xl shadow-sm overflow-x-auto">
@@ -22,31 +22,32 @@ function AdminStudents() {
                 Name
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-blue-900">
-                USN
+                Email
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-blue-900">
                 Department
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-blue-900">
-                Activity Points
+                Role
               </th>
             </tr>
           </thead>
 
           <tbody>
-            {students.map((s) => (
-              <tr key={s.Student_id} className="border-t hover:bg-gray-50">
+            {faculty.map((f) => (
+              <tr key={f.Fac_id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-3 text-sm font-medium">
-                  {s.Student_name}
+                  {f.Fac_name}
                 </td>
                 <td className="px-4 py-3 text-sm">
-                  {s.USN}
+                  {f.Fac_email}
                 </td>
                 <td className="px-4 py-3 text-sm">
-                  {s.Dept_code}
+                  {f.Dept_code}
                 </td>
-                <td className="px-4 py-3 text-sm font-semibold text-blue-800">
-                  {s.Activity_pts}
+                <td className="px-4 py-3 text-sm">
+                  {f.Is_Counsellor ? "Counsellor" : "Faculty"}
+                  {f.Is_Club_Coordinator && " / Club Coordinator"}
                 </td>
               </tr>
             ))}
@@ -57,4 +58,4 @@ function AdminStudents() {
   );
 }
 
-export default AdminStudents;
+export default AdminFaculty;

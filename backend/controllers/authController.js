@@ -221,7 +221,7 @@ const login = async (req, res) => {
   
   try {
     
-    console.log("reached student login auth route");
+    
     
     
     const [rows] = await db.query(

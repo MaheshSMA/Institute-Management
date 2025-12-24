@@ -6,7 +6,7 @@ function StudentLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
+  const [remember, setRemember] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -21,10 +21,10 @@ function StudentLogin() {
     setError("");
 
     // Frontend validation
-    if (!validateEmail(email)) {
-      setError("Use your RVCE email (example@rvce.edu.in)");
-      return;
-    }
+    // if (!validateEmail(email)) {
+    //   setError("Use your RVCE email (example@rvce.edu.in)");
+    //   return;
+    // }
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
@@ -51,6 +51,7 @@ function StudentLogin() {
       storage.setItem("token", res.data.token);
       storage.setItem("role", res.data.role);
       storage.setItem("ref_id", res.data.ref_id);
+      console.log("reached student login auth route");
 
       navigate("/student/dashboard");
     } catch (err) {
@@ -123,7 +124,7 @@ function StudentLogin() {
           </div>
 
           {/* Remember Me */}
-          <div className="flex items-center gap-2 text-sm">
+          {/* <div className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={remember}
@@ -131,7 +132,7 @@ function StudentLogin() {
               className="accent-blue-700"
             />
             <span className="text-gray-700">Remember me</span>
-          </div>
+          </div> */}
 
           {/* Submit */}
           <button

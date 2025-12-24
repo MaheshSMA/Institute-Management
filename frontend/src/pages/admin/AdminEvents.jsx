@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/axios";
 
-function AdminStudents() {
-  const [students, setStudents] = useState([]);
+function AdminEvents() {
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    API.get("/admin/students").then(res => setStudents(res.data));
+    API.get("/admin/events").then(res => setEvents(res.data));
   }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
       <h1 className="text-3xl font-semibold text-blue-900 mb-6">
-        All Students
+        All Events
       </h1>
 
       <div className="bg-white border rounded-xl shadow-sm overflow-x-auto">
@@ -19,34 +19,28 @@ function AdminStudents() {
           <thead className="bg-blue-50">
             <tr>
               <th className="px-4 py-3 text-left text-sm font-semibold text-blue-900">
-                Name
+                Event Name
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-blue-900">
-                USN
+                Club
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-blue-900">
-                Department
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-blue-900">
-                Activity Points
+                Duration
               </th>
             </tr>
           </thead>
 
           <tbody>
-            {students.map((s) => (
-              <tr key={s.Student_id} className="border-t hover:bg-gray-50">
+            {events.map((e) => (
+              <tr key={e.Event_id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-3 text-sm font-medium">
-                  {s.Student_name}
+                  {e.Event_name}
                 </td>
                 <td className="px-4 py-3 text-sm">
-                  {s.USN}
+                  {e.Club_name || e.Club_id}
                 </td>
                 <td className="px-4 py-3 text-sm">
-                  {s.Dept_code}
-                </td>
-                <td className="px-4 py-3 text-sm font-semibold text-blue-800">
-                  {s.Activity_pts}
+                  {e.Duration || "—"}
                 </td>
               </tr>
             ))}
@@ -57,4 +51,4 @@ function AdminStudents() {
   );
 }
 
-export default AdminStudents;
+export default AdminEvents;

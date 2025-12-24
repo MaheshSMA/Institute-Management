@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import API from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +23,6 @@ function StudentDashboard() {
       setStudent(res.data);
     } catch (err) {
       console.error(err);
-      alert("Failed to load student profile");
     }
   };
 
@@ -32,56 +31,100 @@ function StudentDashboard() {
     navigate("/login/student");
   };
 
-  if (!student) return <h3>Loading dashboard...</h3>;
+  if (!student) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        Loading dashboard...
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Student Dashboard</h1>
+    <div className="min-h-screen bg-slate-50 p-6">
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold text-blue-900">
+          Student Dashboard
+        </h1>
 
-      {/* PROFILE CARD */}
-      <div style={cardStyle}>
-        <h3>{student.Student_name}</h3>
-        <p>
-          <b>USN:</b> {student.USN}
-        </p>
-        <p>
-          <b>Department:</b> {student.Dept_code}
-        </p>
-        <p>
-          <b>Year:</b> {student.Year}
-        </p>
-        <p>
-          <b>Counsellor:</b>{" "}
-          {student.Supervised_by ? student.Supervised_by : "Not Assigned"}
-        </p>
+        <button
+          onClick={handleLogout}
+          className="text-sm text-red-600 hover:underline"
+        >
+          Logout
+        </button>
       </div>
 
-      {/* ACTIVITY POINTS */}
-      <div style={cardStyle}>
-        <h2> Activity Points</h2>
-        <h1>{student.Activity_pts}</h1>
+      {/* GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* PROFILE CARD */}
+        <div className="bg-white rounded-xl shadow-sm border p-6 lg:col-span-2">
+          <h2 className="text-xl font-semibold text-blue-800 mb-4">
+            Profile
+          </h2>
+
+          <div className="space-y-2 text-gray-700">
+            <p>
+              <span className="font-medium">Name:</span>{" "}
+              {student.Student_name}
+            </p>
+            <p>
+              <span className="font-medium">USN:</span>{" "}
+              {student.USN}
+            </p>
+            <p>
+              <span className="font-medium">Department:</span>{" "}
+              {student.Dept_code}
+            </p>
+            <p>
+              <span className="font-medium">Year:</span>{" "}
+              {student.Year}
+            </p>
+            <p>
+              <span className="font-medium">Counsellor:</span>{" "}
+              {student.Supervised_by
+                ? student.Supervised_by
+                : "Not Assigned"}
+            </p>
+          </div>
+        </div>
+
+        {/* ACTIVITY POINTS */}
+        <div className="bg-white rounded-xl shadow-sm border p-6 flex flex-col items-center justify-center">
+          <p className="text-sm text-gray-600 mb-2">
+            Activity Points
+          </p>
+          <h1 className="text-5xl font-bold text-blue-900">
+            {student.Activity_pts}
+          </h1>
+        </div>
       </div>
 
-      <button onClick={() => navigate("/student/events")}>View Events</button>
+      {/* ACTIONS */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+        <button
+          onClick={() => navigate("/student/events")}
+          className="bg-white border rounded-lg p-4 text-center hover:shadow-md transition"
+        >
+          View Events
+        </button>
 
-      <button onClick={() => navigate("/student/requests")}>
-        View My Requests
-      </button>
+        <button
+          onClick={() => navigate("/student/requests")}
+          className="bg-white border rounded-lg p-4 text-center hover:shadow-md transition"
+        >
+          My Requests
+        </button>
 
-      <button onClick={() => navigate("/student/faculty")}>
-        Request Counsellor
-      </button>
-
-      <button onClick={handleLogout}>Logout</button>
+        <button
+          onClick={() => navigate("/student/faculty")}
+          className="bg-white border rounded-lg p-4 text-center hover:shadow-md transition"
+        >
+          Request Counsellor
+        </button>
+      </div>
     </div>
   );
 }
-
-const cardStyle = {
-  border: "1px solid #ccc",
-  padding: "15px",
-  marginBottom: "20px",
-  borderRadius: "8px",
-};
 
 export default StudentDashboard;
