@@ -1,4 +1,4 @@
-import React,{ useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api/axios";
 
@@ -9,31 +9,45 @@ function AdminSignup() {
     admin_email: "",
     password: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const signup = async () => {
+  const signup = async (e) => {
+    e.preventDefault();
+    if (!form.admin_name || !form.admin_email || form.password.length < 6)
+      return setError("Valid name, email & password required");
+    if (!/^[^\s@]+@rvce\.edu\.in$/.test(form.fac_email))
+      return "Invalid email format, use RVCE email";
+    if (form.password.length < 6)
+      return "Password must be at least 6 characters";
+
     try {
       await API.post("/auth/register-admin", form);
-      alert("Admin registered successfully");
       navigate("/login/admin");
     } catch (err) {
-      alert(err.response?.data?.error || "Registration failed");
+      setError(err.response?.data?.error || "Registration failed");
     }
   };
 
   return (
-    <div>
-      <h2>Admin Signup</h2>
+    <>
+      <h2 className="text-2xl font-semibold text-blue-900 mb-6 text-center">
+        Admin Signup
+      </h2>
 
-      <input name="admin_name" placeholder="Name" onChange={handleChange} />
-      <input name="admin_email" placeholder="Email" onChange={handleChange} />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
+      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
-      <button onClick={signup}>Register</button>
-    </div>
+      <form onSubmit={signup} className="space-y-4">
+        <input className="input" name="admin_name" placeholder="Full Name" onChange={handleChange} required/>
+        <input className="input" name="admin_email" placeholder="Email" onChange={handleChange} required/>
+        <input className="input" type="password" name="password" placeholder="Password" onChange={handleChange} required/>
+
+        <button className="btn-primary w-full">Create Account</button>
+      </form>
+    </>
   );
 }
 

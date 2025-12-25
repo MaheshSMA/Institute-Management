@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../assets/images/rvce-logo.png";
+import logo from "../../assets/images/rvce-logo.jpeg";
 
 function Brand({ size = "md", showText = true }) {
   const sizes = {

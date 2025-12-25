@@ -1,4 +1,4 @@
-import React,{ useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api/axios";
 
@@ -13,35 +13,60 @@ function StudentSignup() {
     student_email: "",
     password: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const signup = async () => {
+  const validate = () => {
+    if (!form.student_name || !form.usn || !form.student_email || !form.password)
+      return "All required fields must be filled";
+    if (!/^[^\s@]+@rvce\.edu\.in$/.test(form.student_email))
+      return "Invalid email format, use RVCE email";
+    if (form.password.length < 6)
+      return "Password must be at least 6 characters";
+    if (isNaN(form.year))
+      return "Year must be numeric";
+    if(!/^1RV\d{2}[A-Z]{2}\d{3}$/.test(form.usn)){
+      return "USN is in wrong format";
+    }
+    return "";
+  };
+
+  const signup = async (e) => {
+    e.preventDefault();
+    const msg = validate();
+    if (msg) return setError(msg);
+
     try {
       await API.post("/auth/register-student", form);
-      alert("Student registered successfully");
       navigate("/login/student");
     } catch (err) {
-      alert(err.response?.data?.error || "Registration failed");
+      setError(err.response?.data?.error || "Registration failed");
     }
   };
 
   return (
-    <div>
-      <h2>Student Signup</h2>
+    <>
+      <h2 className="text-2xl font-semibold text-blue-900 mb-6 text-center">
+        Student Signup
+      </h2>
 
-      <input name="student_name" placeholder="Name" onChange={handleChange} />
-      <input name="usn" placeholder="USN" onChange={handleChange} />
-      <input type="date" name="dob" onChange={handleChange} />
-      <input name="year" placeholder="Year" onChange={handleChange} />
-      <input name="dept_code" placeholder="Dept Code" onChange={handleChange} />
-      <input name="student_email" placeholder="Email" onChange={handleChange} />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
+      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
-      <button onClick={signup}>Register</button>
-    </div>
+      <form onSubmit={signup} className="space-y-4">
+        <input className="input" name="student_name" placeholder="Full Name" onChange={handleChange} required />
+        <input className="input" name="usn" placeholder="USN" onChange={handleChange} required />
+        <input className="input" type="date" name="dob" onChange={handleChange} required />
+        <input className="input" name="year" placeholder="Year" onChange={handleChange} required />
+        <input className="input uppercase" name="dept_code" placeholder="Dept Code" onChange={handleChange} required />
+        <input className="input" name="student_email" placeholder="Email" onChange={handleChange} required />
+        <input className="input" type="password" name="password" placeholder="Password" onChange={handleChange} required />
+
+        <button className="btn-primary w-full">Create Account</button>
+      </form>
+    </>
   );
 }
 

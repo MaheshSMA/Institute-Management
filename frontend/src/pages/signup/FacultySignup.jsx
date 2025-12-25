@@ -1,4 +1,4 @@
-import React,{ useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api/axios";
 
@@ -12,47 +12,65 @@ function FacultySignup() {
     is_club_coordinator: false,
     password: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
-  const signup = async () => {
+  const validate = () => {
+    if (!form.fac_name || !form.fac_email || !form.password)
+      return "All required fields must be filled";
+    if (!/^[^\s@]+@rvce\.edu\.in$/.test(form.fac_email))
+      return "Invalid email format, use RVCE email";
+    if (form.password.length < 6)
+      return "Password must be at least 6 characters";
+    return "";
+  };
+
+  const signup = async (e) => {
+    e.preventDefault();
+    const msg = validate();
+    if (msg) return setError(msg);
+
     try {
       await API.post("/auth/register-faculty", form);
-      alert("Faculty registered successfully");
       navigate("/login/faculty");
     } catch (err) {
-      alert(err.response?.data?.error || "Registration failed");
+      setError(err.response?.data?.error || "Registration failed");
     }
   };
 
   return (
-    <div>
-      <h2>Faculty Signup</h2>
+    <>
+      <h2 className="text-2xl font-semibold text-blue-900 mb-6 text-center">
+        Faculty Signup
+      </h2>
 
-      <input name="fac_name" placeholder="Name" onChange={handleChange} />
-      <input name="fac_email" placeholder="Email" onChange={handleChange} />
-      <input name="dept_code" placeholder="Dept Code" onChange={handleChange} />
+      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
-      <label>
-        <input type="checkbox" name="is_counsellor" onChange={handleChange} />
-        Counsellor
-      </label>
+      <form onSubmit={signup} className="space-y-4">
+        <input className="input" name="fac_name" placeholder="Full Name" onChange={handleChange} required />
+        <input className="input" name="fac_email" placeholder="Email" onChange={handleChange} required/>
+        <input className="input uppercase" name="dept_code" placeholder="Dept Code" onChange={handleChange} required/>
 
-      <label>
-        <input type="checkbox" name="is_club_coordinator" onChange={handleChange} />
-        Club Coordinator
-      </label>
+        <div className="flex gap-4 text-sm">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="is_counsellor" onChange={handleChange} />
+            Counsellor
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="is_club_coordinator" onChange={handleChange} />
+            Club Coordinator
+          </label>
+        </div>
 
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
+        <input className="input" type="password" name="password" placeholder="Password" onChange={handleChange} required />
 
-      <button onClick={signup}>Register</button>
-    </div>
+        <button className="btn-primary w-full">Create Account</button>
+      </form>
+    </>
   );
 }
 

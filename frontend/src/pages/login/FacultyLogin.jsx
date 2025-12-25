@@ -19,6 +19,8 @@ function FacultyLogin() {
       setError("Email and password are required");
       return;
     }
+    if (!/^[^\s@]+@rvce\.edu\.in$/.test(form.fac_email))
+      return "Invalid email format, use RVCE email";
 
     try {
       setLoading(true);
@@ -71,6 +73,7 @@ function FacultyLogin() {
             <input
               type="email"
               placeholder="faculty@rvce.edu.in"
+              name="fac_email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
