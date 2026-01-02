@@ -139,30 +139,48 @@ const updateEvent = async (req, res) => {
 
 const deleteEvent = async (req, res) => {
   const { eventId } = req.params;
-  const { role, refId } = req.user;
+  const facId = req.user.refId;
 
-  let clubId = role === "Club" ? refId : null;
-
-  if (role === "Faculty") {
-    const [rows] = await db.query(
-      "SELECT Club_id FROM CLUB WHERE Coordinator_id = ?",
-      [refId]
+  try {
+    // 1️⃣ Get faculty's club
+    const [clubRows] = await db.query(
+      `SELECT Club_id FROM CLUB WHERE Coordinator_id = ?`,
+      [facId]
     );
-    if (rows.length === 0) return res.status(403).json({ error: "Not allowed" });
-    clubId = rows[0].Club_id;
+
+    if (clubRows.length === 0) {
+      return res.status(403).json({
+        error: "You are not a club coordinator",
+      });
+    }
+
+    const clubId = clubRows[0].Club_id;
+
+    // 2️⃣ Check event belongs to this club
+    const [eventRows] = await db.query(
+      `SELECT Event_id FROM EVENT WHERE Event_id = ? AND Club_id = ?`,
+      [eventId, clubId]
+    );
+
+    if (eventRows.length === 0) {
+      return res.status(403).json({
+        error: "Event does not belong to your club",
+      });
+    }
+
+    // 3️⃣ Delete
+    await db.query(
+      `DELETE FROM EVENT WHERE Event_id = ?`,
+      [eventId]
+    );
+
+    res.json({ message: "Event deleted successfully" });
+  } catch (err) {
+    console.error("deleteEvent error:", err);
+    res.status(500).json({ error: "Server error" });
   }
-
-  const [result] = await db.query(
-    "DELETE FROM EVENT WHERE Event_id = ? AND Club_id = ?",
-    [eventId, clubId]
-  );
-
-  if (result.affectedRows === 0) {
-    return res.status(403).json({ error: "Cannot delete this event" });
-  }
-
-  res.json({ message: "Event deleted" });
 };
+
 
 
 

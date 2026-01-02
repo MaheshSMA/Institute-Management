@@ -30,6 +30,7 @@ import FacultyRequests from "./pages/faculty/FacultyRequests";
 import FacultyStudents from "./pages/faculty/FacultyStudents";
 import FacultyClubEvents from "./pages/faculty/FacultyClubEvents";
 import FacultyStudentProfile from "./pages/faculty/FacultyStudentProfile";
+import FacultyClubDashboard from "./pages/faculty/FacultyClubDashboard";
 
 /* -------- Admin Pages -------- */
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -186,6 +187,16 @@ function App() {
             <FacultyClubEvents />
           </DashboardLayout>
         }
+      />
+
+      <Route 
+        path="/faculty/club" 
+        element={
+          <DashboardLayout>
+            <FacultyClubDashboard />
+          </DashboardLayout>
+        } 
+          
       />
 
       {/* ================= ADMIN ================= */}

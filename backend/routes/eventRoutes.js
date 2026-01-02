@@ -19,7 +19,6 @@ router.get("/my-club", protect, requireRole("Faculty"), getMyClubEvents);
 
 router.put("/:eventId", protect, requireRole("Faculty"),  updateEvent);
 
-router.delete("/:eventId", protect, requireRole(["Club","Faculty"]), deleteEvent);
-
+router.delete("/:eventId", protect, requireRole("Faculty"), deleteEvent);
 
 module.exports = router;

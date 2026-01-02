@@ -1,133 +1,170 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import API from "../../api/axios";
+import { useNavigate } from "react-router-dom";
 
 function FacultyClubEvents() {
   const [events, setEvents] = useState([]);
-  const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
-  const [duration, setDuration] = useState("");
-  const [message, setMessage] = useState("");
+  const [form, setForm] = useState({
+    event_name: "",
+    description: "",
+    duration: "",
+  });
+
+  const [editingId, setEditingId] = useState(null);
+  const navigate = useNavigate();
+
+  const fetchEvents = async () => {
+    const res = await API.get("/events/my-club");
+    setEvents(res.data);
+  };
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
-  const fetchEvents = async () => {
-    try {
-      const res = await API.get("/events/my-club");
-      setEvents(res.data);
-    } catch (err) {
-      console.error(err);
-      setMessage("Failed to load events");
-    }
+  const createEvent = async () => {
+    if (!form.event_name) return;
+
+    await API.post("/events", form);
+    resetForm();
+    fetchEvents();
   };
 
-  const createEvent = async () => {
-    if (!name.trim()) {
-      setMessage("Event name is required");
-      return;
-    }
+  const startEdit = (event) => {
+    setEditingId(event.Event_id);
+    setForm({
+      event_name: event.Event_name,
+      description: event.Description,
+      duration: event.Duration,
+    });
+  };
 
-    try {
-      await API.post("/events", {
-        event_name: name,
-        description: desc,
-        duration,
-      });
+  const updateEvent = async () => {
+    await API.put(`/events/${editingId}`, form);
+    resetForm();
+    fetchEvents();
+  };
 
-      setName("");
-      setDesc("");
-      setDuration("");
-      setMessage("Event created successfully");
-      fetchEvents();
-    } catch (err) {
-      console.error(err);
-      setMessage("Failed to create event");
-    }
+  const deleteEvent = async (id) => {
+    await API.delete(`/events/${id}`);
+    fetchEvents();
+  };
+
+  const resetForm = () => {
+    setForm({ event_name: "", description: "", duration: "" });
+    setEditingId(null);
   };
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
-      {/* Header */}
-      <h1 className="text-3xl font-semibold text-blue-900 mb-6">
-        My Club Events
+      <h1 className="text-3xl font-semibold mb-6">
+        {editingId ? "Edit Event" : "Create Event"}
       </h1>
 
-      {/* Message */}
-      {message && (
-        <div className="mb-4 text-sm bg-blue-50 text-blue-800 border border-blue-200 rounded-md p-2">
-          {message}
+      {/* Create / Edit Form */}
+      <div className="bg-white p-6 rounded-xl shadow mb-6">
+        <input
+          placeholder="Event name"
+          className="border p-2 w-full mb-2"
+          value={form.event_name}
+          onChange={(e) => setForm({ ...form, event_name: e.target.value })}
+        />
+
+        <textarea
+          placeholder="Description"
+          className="border p-2 w-full mb-2"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+
+        <input
+          placeholder="Duration"
+          className="border p-2 w-full mb-4"
+          value={form.duration}
+          onChange={(e) => setForm({ ...form, duration: e.target.value })}
+        />
+
+        <div className="flex gap-3">
+          {editingId ? (
+            <>
+              <button
+                onClick={updateEvent}
+                className="px-4 py-2 bg-green-600 text-white rounded"
+              >
+                Save Changes
+              </button>
+
+              <button onClick={resetForm} className="px-4 py-2 border rounded">
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={createEvent}
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Create Event
+            </button>
+          )}
         </div>
-      )}
-
-      {/* Create Event */}
-      <div className="bg-white border rounded-xl shadow-sm p-6 mb-8">
-        <h2 className="text-xl font-semibold text-blue-800 mb-4">
-          Create New Event
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Event name"
-            className="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <input
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-            placeholder="Description"
-            className="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <input
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            placeholder="Duration"
-            className="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button
-          onClick={createEvent}
-          className="
-            mt-4 px-6 py-2 rounded-md font-medium
-            bg-blue-700 text-white hover:bg-blue-800 transition
-          "
-        >
-          Create Event
-        </button>
       </div>
 
-      {/* Events List */}
-      {events.length === 0 ? (
-        <div className="text-gray-600">
-          No events created yet.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {events.map((e) => (
-            <div
-              key={e.Event_id}
-              className="bg-white border rounded-xl shadow-sm p-5"
-            >
-              <h3 className="text-lg font-semibold text-blue-800">
-                {e.Event_name}
-              </h3>
+      {/* Events Table */}
+      <div className="bg-white rounded-xl shadow overflow-x-auto">
+        <table className="w-full table-fixed border-collapse">
+          <thead className="bg-blue-50">
+            <tr>
+              <th className="px-4 py-3 text-left font-semibold w-1/4">Name</th>
+              <th className="px-4 py-3 text-left font-semibold w-2/5">
+                Description
+              </th>
+              <th className="px-4 py-3 text-left font-semibold w-1/6">
+                Duration
+              </th>
+              <th className="px-4 py-3 text-center font-semibold w-1/6">
+                Actions
+              </th>
+            </tr>
+          </thead>
 
-              <p className="text-sm text-gray-600 mt-1">
-                {e.Description || "No description"}
-              </p>
+          <tbody>
+            {events.map((e) => (
+              <tr key={e.Event_id} className="border-t">
+                <td className="px-4 py-3">{e.Event_name}</td>
 
-              <p className="text-sm text-gray-700 mt-2">
-                <span className="font-medium">Duration:</span>{" "}
-                {e.Duration || "—"}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+                <td className="px-4 py-3 text-gray-700">{e.Description}</td>
+
+                <td className="px-4 py-3">{e.Duration}</td>
+
+                <td className="px-4 py-3 text-center">
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => startEdit(e)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => deleteEvent(e.Event_id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <button
+        onClick={() => navigate("/faculty/club")}
+        className="mt-6 underline text-sm"
+      >
+        Back to Club Dashboard
+      </button>
     </div>
   );
 }

@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../../api/axios";
 
 function FacultyDashboard() {
   const navigate = useNavigate();
+  const [isCoordinator, setIsCoordinator] = useState(false);
+
+  useEffect(() => {
+    API.get("/clubs")
+      .then(res => {
+        const facId = Number(localStorage.getItem("ref_id"));
+        const hasClub = res.data.some(
+          club => club.Coordinator_id === facId
+        );
+        setIsCoordinator(hasClub);
+      })
+      .catch(console.error);
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-semibold text-blue-900">
           Faculty Dashboard
@@ -16,88 +29,60 @@ function FacultyDashboard() {
         </p>
       </div>
 
-      {/* Main Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Assigned Students */}
-        <div
+        <DashboardCard
+          title="Assigned Students"
+          desc="View and manage students assigned to you"
           onClick={() => navigate("/faculty/students")}
-          className="
-            bg-white border rounded-xl shadow-sm p-6 cursor-pointer
-            hover:shadow-md transition
-          "
-        >
-          <h2 className="text-xl font-semibold text-blue-800 mb-2">
-            Assigned Students
-          </h2>
-          <p className="text-sm text-gray-600">
-            View and manage students assigned to you as a counsellor
-          </p>
-        </div>
+        />
 
         {/* Requests */}
-        <div
+        <DashboardCard
+          title="Student Requests"
+          desc="Approve or reject requests"
           onClick={() => navigate("/faculty/requests")}
-          className="
-            bg-white border rounded-xl shadow-sm p-6 cursor-pointer
-            hover:shadow-md transition
-          "
-        >
-          <h2 className="text-xl font-semibold text-blue-800 mb-2">
-            Student Requests
-          </h2>
-          <p className="text-sm text-gray-600">
-            Approve or reject counsellor and activity point requests
-          </p>
-        </div>
+        />
 
-        {/* Club Events */}
-        <div
-          onClick={() => navigate("/faculty/club-events")}
-          className="
-            bg-white border rounded-xl shadow-sm p-6 cursor-pointer
-            hover:shadow-md transition
-          "
-        >
-          <h2 className="text-xl font-semibold text-blue-800 mb-2">
-            Club Events
-          </h2>
-          <p className="text-sm text-gray-600">
-            Create and manage events for your assigned club
-          </p>
-        </div>
+        {/* Club Dashboard (only if coordinator) */}
+        {isCoordinator && (
+          <DashboardCard
+            title="Club Dashboard"
+            desc="Manage your club and its events"
+            onClick={() => navigate("/faculty/club")}
+          />
+        )}
 
-        {/* Messaging (Coming Soon) */}
-        <div
-          className="
-            bg-gray-100 border border-dashed rounded-xl p-6
-            text-gray-500 cursor-not-allowed
-          "
-        >
-          <h2 className="text-xl font-semibold mb-2">
-            Messaging
-          </h2>
-          <p className="text-sm">
-            Direct communication with students (Coming Soon)
-          </p>
-        </div>
+        {/* Disabled cards */}
+        <DisabledCard
+          title="Messaging"
+          desc="Direct communication with students (Coming Soon)"
+        />
 
-        {/* File Viewer (Coming Soon) */}
-        <div
-          className="
-            bg-gray-100 border border-dashed rounded-xl p-6
-            text-gray-500 cursor-not-allowed
-          "
-        >
-          <h2 className="text-xl font-semibold mb-2">
-            Document Viewer
-          </h2>
-          <p className="text-sm">
-            View uploaded proofs and documents (Coming Soon)
-          </p>
-        </div>
+        <DisabledCard
+          title="Document Viewer"
+          desc="View uploaded proofs (Coming Soon)"
+        />
       </div>
     </div>
   );
 }
+
+const DashboardCard = ({ title, desc, onClick }) => (
+  <div
+    onClick={onClick}
+    className="bg-white border rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition"
+  >
+    <h2 className="text-xl font-semibold text-blue-800 mb-2">{title}</h2>
+    <p className="text-sm text-gray-600">{desc}</p>
+  </div>
+);
+
+const DisabledCard = ({ title, desc }) => (
+  <div className="bg-gray-100 border border-dashed rounded-xl p-6 text-gray-500 cursor-not-allowed">
+    <h2 className="text-xl font-semibold mb-2">{title}</h2>
+    <p className="text-sm">{desc}</p>
+  </div>
+);
 
 export default FacultyDashboard;
