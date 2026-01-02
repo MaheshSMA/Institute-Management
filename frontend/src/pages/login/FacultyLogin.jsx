@@ -19,7 +19,7 @@ function FacultyLogin() {
       setError("Email and password are required");
       return;
     }
-    if (!/^[^\s@]+@rvce\.edu\.in$/.test(form.fac_email))
+    if (!/^[^\s@]+@rvce\.edu\.in$/.test(email))
       return "Invalid email format, use RVCE email";
 
     try {

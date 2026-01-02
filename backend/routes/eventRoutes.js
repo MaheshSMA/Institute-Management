@@ -5,6 +5,7 @@ const {
   getEventsByClub,
   getMyClubEvents,
   updateEvent,
+  deleteEvent,
 } = require('../controllers/eventController');
 const { protect, requireRole } = require("../middleware/authMiddleware");
 
@@ -16,8 +17,9 @@ router.get('/',protect, getAllEvents);
 
 router.get("/my-club", protect, requireRole("Faculty"), getMyClubEvents);
 
-// router.get('/club/:clubId', getEventsByClub);
-
 router.put("/:eventId", protect, requireRole("Faculty"),  updateEvent);
+
+router.delete("/:eventId", protect, requireRole(["Club","Faculty"]), deleteEvent);
+
 
 module.exports = router;

@@ -10,11 +10,13 @@ import LandingPage from "./pages/public/LandingPage";
 import StudentLogin from "./pages/login/StudentLogin";
 import FacultyLogin from "./pages/login/FacultyLogin";
 import AdminLogin from "./pages/login/AdminLogin";
+import ClubLogin from "./pages/login/ClubLogin";
 
 /* -------- Signup Pages -------- */
 import StudentSignup from "./pages/signup/StudentSignup";
 import FacultySignup from "./pages/signup/FacultySignup";
 import AdminSignup from "./pages/signup/AdminSignup";
+import ClubSignup from "./pages/signup/ClubSignup";
 
 /* -------- Student Pages -------- */
 import StudentDashboard from "./pages/student/StudentDashboard";
@@ -27,6 +29,7 @@ import FacultyDashboard from "./pages/faculty/FacultyDashboard";
 import FacultyRequests from "./pages/faculty/FacultyRequests";
 import FacultyStudents from "./pages/faculty/FacultyStudents";
 import FacultyClubEvents from "./pages/faculty/FacultyClubEvents";
+import FacultyStudentProfile from "./pages/faculty/FacultyStudentProfile";
 
 /* -------- Admin Pages -------- */
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -35,10 +38,12 @@ import AdminStudents from "./pages/admin/AdminStudents";
 import AdminFaculty from "./pages/admin/AdminFaculty";
 import AdminEvents from "./pages/admin/AdminEvents";
 
+import ClubDashboard from "./pages/club/ClubDashboard";
+// import ClubEvents from "./pages/club/ClubEvents";
+
 function App() {
   return (
     <Routes>
-
       {/* ================= AUTH (Logo only) ================= */}
       <Route
         path="/"
@@ -73,6 +78,8 @@ function App() {
         }
       />
 
+      <Route path="/login/club" element={<ClubLogin />} />
+
       <Route
         path="/signup/student"
         element={
@@ -96,6 +103,15 @@ function App() {
             <AdminSignup />
           </AuthLayout>
         }
+        />
+
+      <Route 
+        path="/signup/club" 
+        element={
+          <AuthLayout>
+            <ClubSignup />
+          </AuthLayout>
+        } 
       />
 
       {/* ================= STUDENT ================= */}
@@ -157,6 +173,12 @@ function App() {
           </DashboardLayout>
         }
       />
+
+      <Route
+        path="/faculty/students/:studentId"
+        element={<FacultyStudentProfile />}
+      />
+
       <Route
         path="/faculty/club-events"
         element={
@@ -208,6 +230,8 @@ function App() {
         }
       />
 
+      <Route path="/club/dashboard" element={<ClubDashboard />} />
+      {/* <Route path="/club/events" element={<ClubEvents />} /> */}
     </Routes>
   );
 }

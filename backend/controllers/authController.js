@@ -1,9 +1,9 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const db = require('../config/db');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const db = require("../config/db");
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 const generateToken = (payload) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
@@ -14,27 +14,21 @@ const generateToken = (payload) => {
  * Body: { student_name, usn, dob, year, dept_code, student_email, password }
  */
 const registerStudent = async (req, res) => {
-  console.log("reached auth rote")
+  console.log("reached auth rote");
   console.log(req.body);
 
   if (!req.body || Object.keys(req.body).length === 0) {
     console.log(req.body);
-    return res.status(400).json({ error: 'Request body is required' });
+    return res.status(400).json({ error: "Request body is required" });
   }
 
-  const {
-    student_name,
-    usn,
-    dob,
-    year,
-    dept_code,
-    student_email,
-    password,
-  } = req.body;
+  const { student_name, usn, dob, year, dept_code, student_email, password } =
+    req.body;
 
   if (!student_name || !usn || !dept_code || !student_email || !password) {
     return res.status(400).json({
-      error: 'student_name, usn, dept_code, student_email and password are required',
+      error:
+        "student_name, usn, dept_code, student_email and password are required",
     });
   }
 
@@ -43,9 +37,6 @@ const registerStudent = async (req, res) => {
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    
-    
-    
     const [studentResult] = await connection.query(
       `INSERT INTO STUDENT
        (Student_name, USN, DOB, Year, Dept_code, Student_email, Activity_pts)
@@ -67,21 +58,21 @@ const registerStudent = async (req, res) => {
     connection.release();
 
     res.status(201).json({
-      message: 'Student registered successfully',
+      message: "Student registered successfully",
       student_id: studentId,
     });
   } catch (err) {
-    console.error('Error registering student:', err);
+    console.error("Error registering student:", err);
     if (connection) {
       await connection.rollback();
       connection.release();
     }
 
-    if (err.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ error: 'USN or email already exists' });
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "USN or email already exists" });
     }
 
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -101,7 +92,7 @@ const registerFaculty = async (req, res) => {
 
   if (!fac_name || !fac_email || !dept_code || !password) {
     return res.status(400).json({
-      error: 'fac_name, fac_email, dept_code and password are required',
+      error: "fac_name, fac_email, dept_code and password are required",
     });
   }
 
@@ -131,21 +122,21 @@ const registerFaculty = async (req, res) => {
     connection.release();
 
     res.status(201).json({
-      message: 'Faculty registered successfully',
+      message: "Faculty registered successfully",
       fac_id: facId,
     });
   } catch (err) {
-    console.error('Error registering faculty:', err);
+    console.error("Error registering faculty:", err);
     if (connection) {
       await connection.rollback();
       connection.release();
     }
 
-    if (err.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ error: 'Faculty email already exists' });
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Faculty email already exists" });
     }
 
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -159,7 +150,7 @@ const registerAdmin = async (req, res) => {
 
   if (!admin_name || !admin_email || !password) {
     return res.status(400).json({
-      error: 'admin_name, admin_email and password are required',
+      error: "admin_name, admin_email and password are required",
     });
   }
 
@@ -188,21 +179,73 @@ const registerAdmin = async (req, res) => {
     connection.release();
 
     res.status(201).json({
-      message: 'Admin registered successfully',
+      message: "Admin registered successfully",
       admin_id: adminId,
     });
   } catch (err) {
-    console.error('Error registering admin:', err);
+    console.error("Error registering admin:", err);
     if (connection) {
       await connection.rollback();
       connection.release();
     }
 
-    if (err.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ error: 'Admin email already exists' });
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Admin email already exists" });
     }
 
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const clubSignup = async (req, res) => {
+  const { club_name, description, coordinator_id, email, password } = req.body;
+
+  if (!club_name || !coordinator_id || !email || !password) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const connection = await db.getConnection();
+
+  const [existing] = await db.query(
+    "SELECT 1 FROM CLUB WHERE Coordinator_id = ?",
+    [coordinator_id]
+  );
+
+  if (existing.length > 0) {
+    return res.status(400).json({
+      error: "Faculty is already coordinator of another club",
+    });
+  }
+
+  try {
+    await connection.beginTransaction();
+
+    // 1️⃣ Create club
+    const [clubResult] = await connection.query(
+      `INSERT INTO CLUB (Club_name, Description, Coordinator_id)
+       VALUES (?, ?, ?)`,
+      [club_name, description || null, coordinator_id]
+    );
+
+    const clubId = clubResult.insertId;
+
+    // 2️⃣ Create auth entry
+    await connection.query(
+      `INSERT INTO LOGIN (Email, Password, Role, Ref_id)
+       VALUES (?, ?, 'Club', ?)`,
+      [email, hashedPassword, clubId]
+    );
+
+    await connection.commit();
+    res.status(201).json({ message: "Club registered successfully" });
+  } catch (err) {
+    await connection.rollback();
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    connection.release();
   }
 };
 
@@ -212,42 +255,29 @@ const registerAdmin = async (req, res) => {
  */
 const login = async (req, res) => {
   const { email, password } = req.body;
-  
+
   if (!email || !password) {
-    return res
-    .status(400)
-    .json({ error: 'email and password are required' });
+    return res.status(400).json({ error: "email and password are required" });
   }
-  
+
   try {
-    
-    
-    
-    
-    const [rows] = await db.query(
-      `SELECT * FROM LOGIN WHERE Email = ?`,
-      [email]
-    );
-    
+    const [rows] = await db.query(`SELECT * FROM LOGIN WHERE Email = ?`, [
+      email,
+    ]);
+
     if (rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: "Invalid email or password" });
     }
-    
+
     const user = rows[0];
-    
-    
-    
-    
+
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch) {
       console.log(password);
       console.log(user.Password);
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    
-    
-    
     const token = generateToken({
       loginId: user.Login_id,
       role: user.Role,
@@ -256,14 +286,14 @@ const login = async (req, res) => {
     });
 
     res.json({
-      message: 'Login successful',
+      message: "Login successful",
       token,
       role: user.Role,
       ref_id: user.Ref_id,
     });
   } catch (err) {
-    console.error('Error during login:', err);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error during login:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -271,5 +301,6 @@ module.exports = {
   registerStudent,
   registerFaculty,
   registerAdmin,
+  clubSignup,
   login,
 };

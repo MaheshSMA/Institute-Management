@@ -1,33 +1,37 @@
 const db = require('../config/db');
 
 const createEvent = async (req, res) => {
-  try {
-    const facId = req.user.refId;
-    const { event_name, description, duration } = req.body;
+  const { event_name, description, duration } = req.body;
+  const { role, refId } = req.user;
 
-    const [club] = await db.query(
+  let clubId;
+
+  if (role === "Club") {
+    clubId = refId;
+  } 
+  else if (role === "Faculty") {
+    const [rows] = await db.query(
       "SELECT Club_id FROM CLUB WHERE Coordinator_id = ?",
-      [facId]
+      [refId]
     );
-
-    if (!club || club.length === 0) {
-      return res.status(403).json({
-        error: "You are not assigned as a club coordinator",
-      });
+    if (rows.length === 0) {
+      return res.status(403).json({ error: "Not a club coordinator" });
     }
-
-    await db.query(
-      `INSERT INTO EVENT (Event_name, Description, Duration, Club_id)
-       VALUES (?, ?, ?, ?)`,
-      [event_name, description, duration, club[0].Club_id]
-    );
-
-    res.status(201).json({ message: "Event created successfully" });
-  } catch (err) {
-    console.error("createEvent error:", err);
-    res.status(500).json({ error: "Server error" });
+    clubId = rows[0].Club_id;
+  } 
+  else {
+    return res.status(403).json({ error: "Not authorized" });
   }
+
+  await db.query(
+    `INSERT INTO EVENT (Event_name, Description, Duration, Club_id)
+     VALUES (?, ?, ?, ?)`,
+    [event_name, description, duration, clubId]
+  );
+
+  res.status(201).json({ message: "Event created successfully" });
 };
+
   
 
 
@@ -50,7 +54,6 @@ const getMyClubEvents = async (req, res) => {
       [facId]
     );
 
-    // ✅ GUARD CONDITION (THIS WAS MISSING)
     if (!club || club.length === 0) {
       return res.status(403).json({
         error: "You are not assigned as a club coordinator",
@@ -105,39 +108,63 @@ const getEventsByClub = async (req, res) => {
 const updateEvent = async (req, res) => {
   const { eventId } = req.params;
   const { event_name, description, duration } = req.body;
-  const facId = req.user.refId;
+  const { role, refId } = req.user;
 
-  try {
-    const [clubRows] = await db.query(
+  let clubId;
+
+  if (role === "Club") {
+    clubId = refId;
+  } else if (role === "Faculty") {
+    const [rows] = await db.query(
       "SELECT Club_id FROM CLUB WHERE Coordinator_id = ?",
-      [facId]
+      [refId]
     );
-
-    if (clubRows.length === 0) {
-      return res.status(403).json({ error: "Not authorized" });
-    }
-
-    const clubId = clubRows[0].Club_id;
-
-    const [result] = await db.query(
-      `UPDATE EVENT
-       SET Event_name = ?, Description = ?, Duration = ?
-       WHERE Event_id = ? AND Club_id = ?`,
-      [event_name, description, duration, eventId, clubId]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(403).json({
-        error: "You cannot edit this event",
-      });
-    }
-
-    res.json({ message: "Event updated successfully" });
-  } catch (err) {
-    console.error("Error updating event:", err);
-    res.status(500).json({ error: "Server error" });
+    if (rows.length === 0) return res.status(403).json({ error: "Not allowed" });
+    clubId = rows[0].Club_id;
   }
+
+  const [result] = await db.query(
+    `UPDATE EVENT
+     SET Event_name=?, Description=?, Duration=?
+     WHERE Event_id=? AND Club_id=?`,
+    [event_name, description, duration, eventId, clubId]
+  );
+
+  if (result.affectedRows === 0) {
+    return res.status(403).json({ error: "Cannot edit this event" });
+  }
+
+  res.json({ message: "Event updated" });
 };
+
+const deleteEvent = async (req, res) => {
+  const { eventId } = req.params;
+  const { role, refId } = req.user;
+
+  let clubId = role === "Club" ? refId : null;
+
+  if (role === "Faculty") {
+    const [rows] = await db.query(
+      "SELECT Club_id FROM CLUB WHERE Coordinator_id = ?",
+      [refId]
+    );
+    if (rows.length === 0) return res.status(403).json({ error: "Not allowed" });
+    clubId = rows[0].Club_id;
+  }
+
+  const [result] = await db.query(
+    "DELETE FROM EVENT WHERE Event_id = ? AND Club_id = ?",
+    [eventId, clubId]
+  );
+
+  if (result.affectedRows === 0) {
+    return res.status(403).json({ error: "Cannot delete this event" });
+  }
+
+  res.json({ message: "Event deleted" });
+};
+
+
 
 
 
@@ -147,4 +174,5 @@ module.exports = {
   updateEvent,
   getMyClubEvents,
   getEventsByClub,
+  deleteEvent,
 };

@@ -55,9 +55,7 @@ function FacultyStudents() {
 
       {/* Content */}
       {students.length === 0 ? (
-        <div className="text-gray-600">
-          No students assigned yet.
-        </div>
+        <div className="text-gray-600">No students assigned yet.</div>
       ) : (
         <div className="bg-white border rounded-xl shadow-sm overflow-x-auto">
           <table className="w-full border-collapse">
@@ -85,24 +83,25 @@ function FacultyStudents() {
               {students.map((stu) => (
                 <tr
                   key={stu.Student_id}
-                  className="border-t hover:bg-gray-50"
+                  onClick={async () => {
+                    await API.patch(`/requests/mark-read/${stu.Student_id}`);
+                    navigate(`/faculty/students/${stu.Student_id}`);
+                  }}
+                  className="border-t hover:bg-gray-50 cursor-pointer"
                 >
                   <td className="px-4 py-3 text-sm font-medium">
-                    {stu.Student_name}
+                    <div className="flex items-center gap-2">
+                      <span>{stu.Student_name}</span>
+
+                      {stu.unread_count > 0 && (
+                        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                      )}
+                    </div>
                   </td>
 
-                  <td className="px-4 py-3 text-sm">
-                    {stu.USN}
-                  </td>
-
-                  <td className="px-4 py-3 text-sm">
-                    {stu.Dept_code}
-                  </td>
-
-                  <td className="px-4 py-3 text-sm">
-                    {stu.Year}
-                  </td>
-
+                  <td className="px-4 py-3 text-sm">{stu.USN}</td>
+                  <td className="px-4 py-3 text-sm">{stu.Dept_code}</td>
+                  <td className="px-4 py-3 text-sm">{stu.Year}</td>
                   <td className="px-4 py-3 text-sm font-semibold text-blue-800">
                     {stu.Activity_pts}
                   </td>

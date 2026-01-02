@@ -36,10 +36,23 @@ const getAssignedStudents = async (req, res) => {
 
   try {
     const [students] = await db.query(
-      `SELECT Student_id, Student_name, USN, Dept_code, Year, Activity_pts
-       FROM STUDENT
-       WHERE Supervised_by = ?`,
-      [facId]
+      `SELECT 
+        s.Student_id,
+        s.Student_name,
+        s.USN,
+        s.Dept_code,
+        s.Year,
+        s.Activity_pts,
+        COUNT(
+          CASE WHEN cr.Is_read = FALSE THEN 1 END
+        ) AS unread_count
+       FROM STUDENT s
+       LEFT JOIN COUNSELLOR_REQUEST cr
+         ON cr.Student_id = s.Student_id
+         AND cr.Fac_id = ?
+       WHERE s.Supervised_by = ?
+       GROUP BY s.Student_id`,
+      [facId, facId]
     );
 
     res.json(students);
@@ -89,9 +102,58 @@ const createFaculty = async (req, res) => {
   }
 };
 
+const getStudentProfile = async (req, res) => {
+  const { studentId } = req.params;
+
+  const [rows] = await db.query(
+    `SELECT * FROM STUDENT WHERE Student_id = ?`,
+    [studentId]
+  );
+
+  res.json(rows[0]);
+};
+
+const updateStudentPoints = async (req, res) => {
+  const { studentId } = req.params;
+  const { activity_pts } = req.body;
+
+  await db.query(
+    `UPDATE STUDENT
+     SET Activity_pts = ?
+     WHERE Student_id = ?`,
+    [activity_pts, studentId]
+  );
+
+  res.json({ message: "Activity points updated" });
+};
+
+const getAvailableClubCoordinators = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT f.*
+       FROM FACULTY f
+       WHERE f.Is_Club_Coordinator = 1
+       AND f.Fac_id NOT IN (
+         SELECT Coordinator_id FROM CLUB WHERE Coordinator_id IS NOT NULL
+       )`
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching available coordinators:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+
+
 module.exports = {
   getAllFaculty,
   getAssignedStudents,
   getFacultyById,
   createFaculty,
+  getStudentProfile,
+  updateStudentPoints,
+  getAvailableClubCoordinators,
 };

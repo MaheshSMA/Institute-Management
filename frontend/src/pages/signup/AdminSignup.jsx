@@ -19,7 +19,7 @@ function AdminSignup() {
     e.preventDefault();
     if (!form.admin_name || !form.admin_email || form.password.length < 6)
       return setError("Valid name, email & password required");
-    if (!/^[^\s@]+@rvce\.edu\.in$/.test(form.fac_email))
+    if (!/^[^\s@]+@rvce\.edu\.in$/.test(form.admin_email))
       return "Invalid email format, use RVCE email";
     if (form.password.length < 6)
       return "Password must be at least 6 characters";
