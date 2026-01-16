@@ -77,9 +77,16 @@ function App() {
             <AdminLogin />
           </AuthLayout>
         }
-      />
+        />
 
-      <Route path="/login/club" element={<ClubLogin />} />
+      <Route 
+        path="/login/club" 
+        element={
+          <AuthLayout>
+            <ClubLogin />
+          </AuthLayout>
+        }
+      />
 
       <Route
         path="/signup/student"
@@ -173,11 +180,15 @@ function App() {
             <FacultyStudents />
           </DashboardLayout>
         }
-      />
+        />
 
       <Route
         path="/faculty/students/:studentId"
-        element={<FacultyStudentProfile />}
+        element={
+          <DashboardLayout>
+            <FacultyStudentProfile/>
+          </DashboardLayout>
+        }
       />
 
       <Route
@@ -239,9 +250,16 @@ function App() {
             <AdminEvents />
           </DashboardLayout>
         }
-      />
+        />
 
-      <Route path="/club/dashboard" element={<ClubDashboard />} />
+      <Route 
+        path="/club/dashboard" 
+        element={
+          <DashboardLayout>
+            <ClubDashboard />
+          </DashboardLayout>
+        } 
+      />
       {/* <Route path="/club/events" element={<ClubEvents />} /> */}
     </Routes>
   );
