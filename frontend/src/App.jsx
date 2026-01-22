@@ -23,6 +23,7 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentRequests from "./pages/student/StudentRequests";
 import StudentEvents from "./pages/student/StudentEvents";
 import StudentFacultyList from "./pages/student/StudentFacultyList";
+import StudentMessages from "./pages/student/StudentMessages";
 
 /* -------- Faculty Pages -------- */
 import FacultyDashboard from "./pages/faculty/FacultyDashboard";
@@ -155,6 +156,9 @@ function App() {
           </DashboardLayout>
         }
       />
+
+      <Route path="/student/messages" element={<StudentMessages />} />
+
 
       {/* ================= FACULTY ================= */}
       <Route

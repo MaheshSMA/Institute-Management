@@ -59,41 +59,32 @@ function StudentDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* PROFILE CARD */}
         <div className="bg-white rounded-xl shadow-sm border p-6 lg:col-span-2">
-          <h2 className="text-xl font-semibold text-blue-800 mb-4">
-            Profile
-          </h2>
+          <h2 className="text-xl font-semibold text-blue-800 mb-4">Profile</h2>
 
           <div className="space-y-2 text-gray-700">
             <p>
-              <span className="font-medium">Name:</span>{" "}
-              {student.Student_name}
+              <span className="font-medium">Name:</span> {student.Student_name}
             </p>
             <p>
-              <span className="font-medium">USN:</span>{" "}
-              {student.USN}
+              <span className="font-medium">USN:</span> {student.USN}
             </p>
             <p>
               <span className="font-medium">Department:</span>{" "}
               {student.Dept_code}
             </p>
             <p>
-              <span className="font-medium">Year:</span>{" "}
-              {student.Year}
+              <span className="font-medium">Year:</span> {student.Year}
             </p>
             <p>
               <span className="font-medium">Counsellor:</span>{" "}
-              {student.Supervised_by
-                ? student.Supervised_by
-                : "Not Assigned"}
+              {student.Supervised_by ? student.Supervised_by : "Not Assigned"}
             </p>
           </div>
         </div>
 
         {/* ACTIVITY POINTS */}
         <div className="bg-white rounded-xl shadow-sm border p-6 flex flex-col items-center justify-center">
-          <p className="text-sm text-gray-600 mb-2">
-            Activity Points
-          </p>
+          <p className="text-sm text-gray-600 mb-2">Activity Points</p>
           <h1 className="text-5xl font-bold text-blue-900">
             {student.Activity_pts}
           </h1>
@@ -121,6 +112,12 @@ function StudentDashboard() {
           className="bg-white border rounded-lg p-4 text-center hover:shadow-md transition"
         >
           Request Counsellor
+        </button>
+        <button
+          onClick={() => navigate("/student/messages")}
+          className="bg-white border rounded-lg p-4 hover:shadow-md transition"
+        >
+          Messages
         </button>
       </div>
     </div>

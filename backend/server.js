@@ -8,6 +8,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const studentRoutes = require('./routes/studentRoutes');
 const facultyRoutes = require('./routes/facultyRoutes');
+const messageRoutes = require('./routes/messageRoutes');
 const counsellorRequestRoutes = require('./routes/counsellorRequestRoutes');
 const clubRoutes = require('./routes/clubRoutes');
 const eventRoutes = require('./routes/eventRoutes');
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/students', studentRoutes);
 app.use('/api/faculty', facultyRoutes);
+app.use('/api/messages', messageRoutes);
 app.use('/api/requests', counsellorRequestRoutes);
 app.use('/api/clubs', clubRoutes);
 app.use('/api/events', eventRoutes);
