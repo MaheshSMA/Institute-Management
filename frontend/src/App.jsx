@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import React from "react";
+import ChatLauncher from "./components/ChatLauncher";
+import { useLocation } from "react-router-dom";
 
 /* -------- Layouts -------- */
 import PublicLayout from "./components/layout/PublicLayout";
@@ -44,8 +46,12 @@ import ClubDashboard from "./pages/club/ClubDashboard";
 // import ClubEvents from "./pages/club/ClubEvents";
 
 function App() {
+  const location = useLocation();
+  const hide = location.pathname.startsWith("/login") || location.pathname.startsWith("/signup") ;
   return (
-    <Routes>
+    <>
+      {!hide && <ChatLauncher />}
+      <Routes>
       {/* ================= AUTH (Logo only) ================= */}
       <Route
         path="/"
@@ -266,6 +272,8 @@ function App() {
       />
       {/* <Route path="/club/events" element={<ClubEvents />} /> */}
     </Routes>
+    </>
+    
   );
 }
 
