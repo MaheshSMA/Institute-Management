@@ -1,0 +1,408 @@
+# 🎓 Institution Management System
+
+*A Full-Stack Role-Based Academic & Club Management Platform*
+
+---
+
+## 📌 Overview
+
+The **Institution Management System** is a full-stack web application designed to digitize and automate academic administration, student–faculty interactions, club management, activity tracking, AI insights, and policy enforcement within an educational institution.
+
+The system supports **multiple user roles** with strict access control:
+
+* **Student**
+* **Faculty**
+* **Club (Coordinator)**
+* **Admin**
+
+It integrates:
+
+* Role-based dashboards
+* Club ecosystems with events & feeds
+* Activity point governance
+* Policy engine with violation detection & auto-resolution
+* Digital Twin & AI analytics
+* Secure messaging
+* Audit-friendly workflows
+
+---
+
+## 🧱 Tech Stack
+
+### Frontend
+
+* **React (Vite)**
+* **Tailwind CSS**
+* **Axios**
+* **React Router**
+
+### Backend
+
+* **Node.js**
+* **Express**
+* **JWT Authentication**
+* **MySQL**
+
+---
+
+## 🔐 Authentication & Authorization
+
+* JWT-based authentication
+* Middleware:
+
+  * `protect` → verifies JWT
+  * `requireRole(role)` → enforces role-based access
+* Each user logs in via a **role-specific portal**
+
+---
+
+## 👥 User Roles & Capabilities
+
+---
+
+## 🎓 STUDENT MODULE
+
+### Student Dashboard
+
+* Profile overview (Name, USN, Dept, Year, Counsellor)
+* Activity points summary
+* Quick actions:
+
+  * Events
+  * Clubs
+  * Requests
+  * Counsellor
+  * Messages
+
+---
+
+### Club Membership
+
+* View all clubs
+* Request to join clubs
+* Track membership status:
+
+  * Pending
+  * Approved
+  * Rejected
+* Approved club becomes clickable → opens **club feed**
+
+**SQL (membership view):**
+
+```sql
+SELECT c.Club_id, c.Club_name, m.Status
+FROM CLUB_MEMBERSHIP m
+JOIN CLUB c ON m.Club_id = c.Club_id
+WHERE m.Student_id = ?;
+```
+
+---
+
+### Club Feed (Student Side)
+
+* Students **only see feeds of approved clubs**
+* Read-only access
+* Posts ordered by timestamp
+
+---
+
+### Event Participation
+
+* Browse upcoming events
+* Register for events
+* Attendance & activity point attribution
+
+---
+
+### Requests System
+
+Students can submit:
+
+* Counsellor Join Requests
+* Activity Point Requests (with document upload)
+
+---
+
+### Messaging
+
+* One-to-one chat with assigned faculty counsellor
+* Read receipts & unread indicators
+
+---
+
+## 👨‍🏫 FACULTY MODULE
+
+### Faculty Dashboard
+
+* Dynamic statistics:
+
+  * Assigned students
+  * Pending requests
+  * Approved requests
+  * Clubs coordinated
+* Action shortcuts:
+
+  * Requests
+  * Students
+  * AI Insights
+  * Club Dashboard (if coordinator)
+
+---
+
+### Assigned Students
+
+* View all supervised students
+* Visual indicators:
+
+  * Urgent
+  * Needs Attention
+  * Unread messages
+* Navigate to:
+
+  * Student profile
+  * Digital Twin
+
+---
+
+### Faculty → Student Profile
+
+* View academic details
+* Edit activity points
+* Secure messaging panel
+* Message history
+
+---
+
+### Student Requests Handling
+
+* View all assigned requests
+* Approve / Reject
+* Document preview
+* Auto update of student records
+
+**SQL (faculty requests):**
+
+```sql
+SELECT r.*, s.Student_name, s.USN
+FROM REQUEST r
+JOIN STUDENT s ON r.Student_id = s.Student_id
+WHERE r.Fac_id = ?;
+```
+
+---
+
+### AI Student Insights
+
+* Risk analysis
+* Engagement scoring
+* Behavioral indicators
+  *(Powered via AI services + analytics pipelines)*
+
+---
+
+## 🏛️ CLUB MODULE
+
+### Club Dashboard
+
+* Club stats:
+
+  * Total events
+  * Participants
+  * Activity points issued
+* Manage:
+
+  * Events
+  * Members
+  * Feed
+
+---
+
+### Club Membership Requests
+
+* Approve / Reject student join requests
+* Full audit trail
+
+**SQL:**
+
+```sql
+SELECT s.Student_id, s.Student_name, cm.Status
+FROM CLUB_MEMBERSHIP cm
+JOIN STUDENT s ON cm.Student_id = s.Student_id
+WHERE cm.Club_id = ?;
+```
+
+---
+
+### Club Feed
+
+* Official announcement system
+* Club coordinators can:
+
+  * Post announcements
+  * Delete posts
+* Students see feed **only if approved**
+
+---
+
+### Event Management
+
+* Create events
+* Edit events
+* Delete events (with confirmation modal)
+
+**SQL (club events):**
+
+```sql
+SELECT *
+FROM EVENT
+WHERE Club_id = ?
+ORDER BY Event_date DESC;
+```
+
+---
+
+## 🛡️ ADMIN MODULE
+
+### Policy Management
+
+Admins define system-wide rules:
+
+Supported policies:
+
+* `MAX_ACTIVITY_POINTS` (Student)
+* `MAX_COUNSELLOR_LOAD` (Faculty)
+
+---
+
+### Create Policies
+
+* Name
+* Type
+* Target role
+* Threshold value
+* Activation status
+
+---
+
+### Policy Engine
+
+Triggered manually or via scheduler.
+
+#### What it does:
+
+1. Fetch active policies
+2. Evaluate system state
+3. Detect violations
+4. Insert or update violations
+5. Auto-resolve old violations
+
+---
+
+### Policy Violation Detection
+
+**Activity Points Policy**
+
+```sql
+SELECT Student_id, Activity_pts
+FROM STUDENT
+WHERE Activity_pts > ?;
+```
+
+**Counsellor Load Policy**
+
+```sql
+SELECT Supervised_by AS Fac_id, COUNT(*) AS cnt
+FROM STUDENT
+GROUP BY Supervised_by
+HAVING cnt > ?;
+```
+
+---
+
+### Violation Storage Logic
+
+* Prevent duplicate active violations
+* Update current value if threshold worsens
+
+```sql
+INSERT INTO POLICY_VIOLATION
+(Policy_id, Target_id, Target_role, Current_value, Threshold_value, Status)
+VALUES (?, ?, ?, ?, ?, 'Detected')
+ON DUPLICATE KEY UPDATE
+  Current_value = VALUES(Current_value),
+  Threshold_value = VALUES(Threshold_value),
+  Detected_at = NOW(),
+  Status = 'Detected';
+```
+
+---
+
+### ✅ Auto-Resolution Logic (IMPORTANT)
+
+When a violation **no longer applies**, it is **auto-resolved**:
+
+```sql
+UPDATE POLICY_VIOLATION v
+JOIN STUDENT s ON v.Target_role='Student' AND v.Target_id=s.Student_id
+JOIN ADMIN_POLICY p ON p.Policy_id=v.Policy_id
+SET v.Status='Resolved'
+WHERE v.Status='Detected'
+  AND p.Policy_type='MAX_ACTIVITY_POINTS'
+  AND s.Activity_pts <= p.Threshold_value;
+```
+
+(Similar logic applies for faculty load.)
+
+---
+
+### Policy Violations Dashboard
+
+* Live violations table
+* Shows:
+
+  * Target
+  * Current value
+  * Threshold
+  * Detection timestamp
+* Automatically clears resolved violations
+
+---
+
+## 🔔 Messaging System
+
+* Student ↔ Faculty chat
+* Timestamped messages
+* Sender distinction
+* Unread tracking
+
+---
+
+## 🧠 Digital Twin System
+
+* Per-student behavioral model
+* Tracks:
+
+  * Engagement
+  * Risk
+  * Performance
+* Accessible to faculty
+
+---
+
+## 📊 Data Integrity & Auditability
+
+* Every action logged via timestamps
+* No silent overwrites
+* Policy violations preserved with status history
+
+---
+
+## 🔒 Security Highlights
+
+* JWT authentication
+* Role-based middleware
+* Server-side validation
+* Protected routes
+* No client-side trust
+
+---
