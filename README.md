@@ -1,408 +1,577 @@
-# 🎓 Institution Management System
+# Institute Management System
 
-*A Full-Stack Role-Based Academic & Club Management Platform*
+A comprehensive full-stack web application for managing institutional operations including student management, faculty coordination, club activities, events, and AI-powered student insights. Built with modern web technologies and intelligent analytics.
 
----
+## 📋 Table of Contents
 
-## 📌 Overview
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Installation & Setup](#-installation--setup)
+- [Database Setup](#-database-setup)
+- [Running the Application](#-running-the-application)
+- [API Endpoints](#-api-endpoints)
+- [Configuration](#-configuration)
+- [Project Structure Details](#-detailed-project-structure)
+- [License](#-license)
 
-The **Institution Management System** is a full-stack web application designed to digitize and automate academic administration, student–faculty interactions, club management, activity tracking, AI insights, and policy enforcement within an educational institution.
+## 🌟 Features
 
-The system supports **multiple user roles** with strict access control:
+### Core Features
+- **Student Management**: Complete student profiles, activity tracking, and supervision management
+- **Faculty Management**: Faculty profiles, counsellor assignments, club coordinator roles
+- **Club Management**: Club creation, membership tracking, event organization, feed sharing
+- **Event Management**: Create, schedule, and track events with participation records
+- **Messaging System**: Direct messaging between students and faculty
+- **Counsellor Requests**: Students can submit counselling requests with status tracking
+- **Admin Dashboard**: Comprehensive dashboards for institutional oversight and reporting
 
-* **Student**
-* **Faculty**
-* **Club (Coordinator)**
-* **Admin**
+### Advanced Features
+- **AI Insights**: Machine learning-driven analysis of student engagement using Ollama/Llama models
+  - Message sentiment analysis
+  - Student engagement level prediction
+  - Risk scoring for at-risk students
+  - Personalized insights generation
+- **Student Twin System**: Intelligent student matching based on profiles and academic interests
+- **NAAC Dashboard**: National Assessment and Accreditation Council compliance tracking
+  - Evidence management for accreditation
+  - Upload and organize accreditation documents
+- **Policy Management**: Institute policy documentation and updates
+- **Participation Tracking**: Track student participation in events and activities
+- **Club Feed**: Social feed for club announcements and member interactions
 
-It integrates:
+### Role-Based Access
+- **Students**: View dashboard, messages, events, counsellor requests, clubs, AI insights
+- **Faculty**: Manage students, requests, club events, AI insights for assigned students
+- **Admin**: System administration, policy management, NAAC compliance, reports
+- **Club**: Club management, membership, events, feed
 
-* Role-based dashboards
-* Club ecosystems with events & feeds
-* Activity point governance
-* Policy engine with violation detection & auto-resolution
-* Digital Twin & AI analytics
-* Secure messaging
-* Audit-friendly workflows
-
----
-
-## 🧱 Tech Stack
+## 🛠 Tech Stack
 
 ### Frontend
-
-* **React (Vite)**
-* **Tailwind CSS**
-* **Axios**
-* **React Router**
+- **Framework**: React 19 with Vite
+- **Styling**: Tailwind CSS 4, Material-UI (MUI)
+- **Routing**: React Router v7
+- **HTTP Client**: Axios
+- **UI Components**: Lucide React, Recharts (data visualization)
+- **Animation**: Framer Motion
+- **Markdown Support**: React Markdown with GFM
 
 ### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MySQL 2 connector
+- **Authentication**: JWT (JSON Web Tokens), bcrypt.js
+- **File Upload**: Multer
+- **Environment**: dotenv
+- **HTTP Client**: Axios
+- **CORS**: Enabled for cross-origin requests
 
-* **Node.js**
-* **Express**
-* **JWT Authentication**
-* **MySQL**
+### AI/ML Service
+- **Framework**: FastAPI
+- **Server**: Uvicorn
+- **Database**: MySQL connector
+- **LLM Integration**: Ollama with Llama 3.2:3B model
+- **HTTP Client**: Requests
 
----
+### Database
+- **Type**: MySQL
+- **Version**: Compatible with MySQL 8.0+
 
-## 🔐 Authentication & Authorization
+## 📁 Project Structure
 
-* JWT-based authentication
-* Middleware:
+```
+Institute-Management/
+├── frontend/                   # React Vite application
+│   ├── src/
+│   │   ├── components/        # Reusable UI components
+│   │   │   ├── layout/       # Layout components (Header, Footer, Auth, Dashboard)
+│   │   │   ├── ui/           # UI elements (Button, Card, Input, Badge, Table)
+│   │   │   ├── feedback/     # Feedback components (Alert, Loader)
+│   │   │   ├── ChatLauncher.jsx
+│   │   │   └── SyllabusChat.jsx
+│   │   ├── pages/            # Page components
+│   │   │   ├── admin/       # Admin dashboards and management pages
+│   │   │   ├── student/     # Student portal pages
+│   │   │   ├── faculty/     # Faculty portal pages
+│   │   │   ├── club/        # Club management pages
+│   │   │   ├── login/       # Login pages
+│   │   │   ├── signup/      # Registration pages
+│   │   │   └── public/      # Public pages
+│   │   ├── api/             # API configuration
+│   │   ├── assets/          # Images and static assets
+│   │   ├── theme/           # Theme configuration
+│   │   ├── App.jsx          # Main app component
+│   │   └── main.jsx         # Entry point
+│   └── package.json
+│
+├── backend/                   # Express.js REST API
+│   ├── controllers/          # Business logic
+│   │   ├── studentController.js
+│   │   ├── facultyController.js
+│   │   ├── adminController.js
+│   │   ├── clubController.js
+│   │   ├── eventController.js
+│   │   ├── participationController.js
+│   │   ├── messageController.js
+│   │   ├── counsellorRequestController.js
+│   │   ├── aiInsightsController.js
+│   │   ├── naacController.js
+│   │   ├── naacEvidenceController.js
+│   │   ├── twinController.js
+│   │   ├── clubMembershipController.js
+│   │   ├── clubFeedController.js
+│   │   ├── clubEventController.js
+│   │   └── policyController.js
+│   ├── routes/              # API routes
+│   │   └── [Various route files for each feature]
+│   ├── middleware/          # Custom middleware
+│   │   ├── authMiddleware.js
+│   │   └── naacUpload.js
+│   ├── config/              # Configuration files
+│   │   └── db.js           # Database connection
+│   ├── services/            # Business logic services
+│   │   └── twinEngine.js    # Student matching engine
+│   ├── uploads/             # File storage directory
+│   ├── server.js            # Express app setup
+│   └── package.json
+│
+├── ai-service/              # Python FastAPI service
+│   ├── app.py              # FastAPI application
+│   ├── db.py               # Database utilities
+│   ├── ollama_client.py    # Ollama LLM integration
+│   ├── worker.py           # AI insight generation worker
+│   ├── requirements.txt     # Python dependencies
+│   └── __pycache__/
+│
+├── aibackend/              # Additional AI backend components
+│   ├── main.py
+│   ├── pdf_loader.py       # PDF processing for syllabus
+│   └── syllabus/
+│
+├── init.sql                # Database initialization script
+├── seed.sql                # Sample data for testing
+└── README.md               # This file
 
-  * `protect` → verifies JWT
-  * `requireRole(role)` → enforces role-based access
-* Each user logs in via a **role-specific portal**
-
----
-
-## 👥 User Roles & Capabilities
-
----
-
-## 🎓 STUDENT MODULE
-
-### Student Dashboard
-
-* Profile overview (Name, USN, Dept, Year, Counsellor)
-* Activity points summary
-* Quick actions:
-
-  * Events
-  * Clubs
-  * Requests
-  * Counsellor
-  * Messages
-
----
-
-### Club Membership
-
-* View all clubs
-* Request to join clubs
-* Track membership status:
-
-  * Pending
-  * Approved
-  * Rejected
-* Approved club becomes clickable → opens **club feed**
-
-**SQL (membership view):**
-
-```sql
-SELECT c.Club_id, c.Club_name, m.Status
-FROM CLUB_MEMBERSHIP m
-JOIN CLUB c ON m.Club_id = c.Club_id
-WHERE m.Student_id = ?;
 ```
 
----
+## 📋 Prerequisites
 
-### Club Feed (Student Side)
+Before you begin, ensure you have the following installed:
 
-* Students **only see feeds of approved clubs**
-* Read-only access
-* Posts ordered by timestamp
+- **Node.js**: v18 or higher
+- **npm**: v9 or higher (comes with Node.js)
+- **Python**: v3.8 or higher
+- **MySQL**: v8.0 or higher
+- **Ollama**: For AI service (optional, for AI insights feature)
 
----
+### Verify Installation
 
-### Event Participation
-
-* Browse upcoming events
-* Register for events
-* Attendance & activity point attribution
-
----
-
-### Requests System
-
-Students can submit:
-
-* Counsellor Join Requests
-* Activity Point Requests (with document upload)
-
----
-
-### Messaging
-
-* One-to-one chat with assigned faculty counsellor
-* Read receipts & unread indicators
-
----
-
-## 👨‍🏫 FACULTY MODULE
-
-### Faculty Dashboard
-
-* Dynamic statistics:
-
-  * Assigned students
-  * Pending requests
-  * Approved requests
-  * Clubs coordinated
-* Action shortcuts:
-
-  * Requests
-  * Students
-  * AI Insights
-  * Club Dashboard (if coordinator)
-
----
-
-### Assigned Students
-
-* View all supervised students
-* Visual indicators:
-
-  * Urgent
-  * Needs Attention
-  * Unread messages
-* Navigate to:
-
-  * Student profile
-  * Digital Twin
-
----
-
-### Faculty → Student Profile
-
-* View academic details
-* Edit activity points
-* Secure messaging panel
-* Message history
-
----
-
-### Student Requests Handling
-
-* View all assigned requests
-* Approve / Reject
-* Document preview
-* Auto update of student records
-
-**SQL (faculty requests):**
-
-```sql
-SELECT r.*, s.Student_name, s.USN
-FROM REQUEST r
-JOIN STUDENT s ON r.Student_id = s.Student_id
-WHERE r.Fac_id = ?;
+```bash
+node --version
+npm --version
+python --version
+mysql --version
 ```
 
----
+## 🚀 Installation & Setup
 
-### AI Student Insights
+### 1. Clone the Repository
 
-* Risk analysis
-* Engagement scoring
-* Behavioral indicators
-  *(Powered via AI services + analytics pipelines)*
-
----
-
-## 🏛️ CLUB MODULE
-
-### Club Dashboard
-
-* Club stats:
-
-  * Total events
-  * Participants
-  * Activity points issued
-* Manage:
-
-  * Events
-  * Members
-  * Feed
-
----
-
-### Club Membership Requests
-
-* Approve / Reject student join requests
-* Full audit trail
-
-**SQL:**
-
-```sql
-SELECT s.Student_id, s.Student_name, cm.Status
-FROM CLUB_MEMBERSHIP cm
-JOIN STUDENT s ON cm.Student_id = s.Student_id
-WHERE cm.Club_id = ?;
+```bash
+git clone https://github.com/MaheshSMA/Institute-Management.git
+cd Institute-Management
 ```
 
----
+### 2. Frontend Setup
 
-### Club Feed
-
-* Official announcement system
-* Club coordinators can:
-
-  * Post announcements
-  * Delete posts
-* Students see feed **only if approved**
-
----
-
-### Event Management
-
-* Create events
-* Edit events
-* Delete events (with confirmation modal)
-
-**SQL (club events):**
-
-```sql
-SELECT *
-FROM EVENT
-WHERE Club_id = ?
-ORDER BY Event_date DESC;
+```bash
+cd frontend
+npm install
 ```
 
----
+### 3. Backend Setup
 
-## 🛡️ ADMIN MODULE
-
-### Policy Management
-
-Admins define system-wide rules:
-
-Supported policies:
-
-* `MAX_ACTIVITY_POINTS` (Student)
-* `MAX_COUNSELLOR_LOAD` (Faculty)
-
----
-
-### Create Policies
-
-* Name
-* Type
-* Target role
-* Threshold value
-* Activation status
-
----
-
-### Policy Engine
-
-Triggered manually or via scheduler.
-
-#### What it does:
-
-1. Fetch active policies
-2. Evaluate system state
-3. Detect violations
-4. Insert or update violations
-5. Auto-resolve old violations
-
----
-
-### Policy Violation Detection
-
-**Activity Points Policy**
-
-```sql
-SELECT Student_id, Activity_pts
-FROM STUDENT
-WHERE Activity_pts > ?;
+```bash
+cd ../backend
+npm install
 ```
 
-**Counsellor Load Policy**
+### 4. AI Service Setup (Optional)
 
-```sql
-SELECT Supervised_by AS Fac_id, COUNT(*) AS cnt
-FROM STUDENT
-GROUP BY Supervised_by
-HAVING cnt > ?;
+```bash
+cd ../ai-service
+pip install -r requirements.txt
 ```
 
----
+### 5. Create Environment Files
 
-### Violation Storage Logic
+#### Backend `.env` file
+Create `backend/.env`:
 
-* Prevent duplicate active violations
-* Update current value if threshold worsens
-
-```sql
-INSERT INTO POLICY_VIOLATION
-(Policy_id, Target_id, Target_role, Current_value, Threshold_value, Status)
-VALUES (?, ?, ?, ?, ?, 'Detected')
-ON DUPLICATE KEY UPDATE
-  Current_value = VALUES(Current_value),
-  Threshold_value = VALUES(Threshold_value),
-  Detected_at = NOW(),
-  Status = 'Detected';
+```env
+PORT=5000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=mysql
+DB_NAME=institution_db
+JWT_SECRET=your_jwt_secret_key_here_change_this
+PYTHON_WORKER_URL=http://localhost:8000
+NODE_ENV=development
 ```
 
----
+#### AI Service `.env` file (if using)
+Create `ai-service/.env`:
 
-### ✅ Auto-Resolution Logic (IMPORTANT)
-
-When a violation **no longer applies**, it is **auto-resolved**:
-
-```sql
-UPDATE POLICY_VIOLATION v
-JOIN STUDENT s ON v.Target_role='Student' AND v.Target_id=s.Student_id
-JOIN ADMIN_POLICY p ON p.Policy_id=v.Policy_id
-SET v.Status='Resolved'
-WHERE v.Status='Detected'
-  AND p.Policy_type='MAX_ACTIVITY_POINTS'
-  AND s.Activity_pts <= p.Threshold_value;
+```env
+OLLAMA_URL=http://localhost:11434
+MODEL=llama3.2:3b
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=mysql
+DB_NAME=institution_db
 ```
 
-(Similar logic applies for faculty load.)
+## 🗄️ Database Setup
+
+### 1. Create Database and Tables
+
+```bash
+mysql -u root -p < init.sql
+```
+
+When prompted, enter your MySQL password.
+
+### 2. (Optional) Seed Sample Data
+
+```bash
+mysql -u root -p institution_db < seed.sql
+```
+
+### 3. Verify Database Connection
+
+```bash
+mysql -u root -p
+> USE institution_db;
+> SHOW TABLES;
+> EXIT;
+```
+
+## ▶️ Running the Application
+
+### Terminal 1: Backend Server
+
+```bash
+cd backend
+npm start
+# Server runs on http://localhost:5000
+```
+
+### Terminal 2: Frontend Application
+
+```bash
+cd frontend
+npm run dev
+# Application runs on http://localhost:5173
+```
+
+### Terminal 3: AI Service (Optional)
+
+```bash
+cd ai-service
+python -m uvicorn app:app --reload --port 8000
+# AI service runs on http://localhost:8000
+```
+
+### Terminal 4: Python AI Worker (Optional)
+
+```bash
+cd ai-service
+python worker.py
+```
+
+The application should now be accessible at:
+- **Frontend**: `http://localhost:5173`
+- **Backend**: `http://localhost:5000`
+- **AI Service**: `http://localhost:8000` (if running)
+
+## 🔌 API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/logout` - User logout
+
+### Students
+- `GET /api/students` - Get all students
+- `GET /api/students/:id` - Get student profile
+- `PUT /api/students/:id` - Update student profile
+- `GET /api/students/:id/activity` - Get activity points
+
+### Faculty
+- `GET /api/faculty` - Get all faculty
+- `GET /api/faculty/:id` - Get faculty profile
+- `PUT /api/faculty/:id` - Update faculty profile
+- `GET /api/faculty/:id/students` - Get assigned students
+
+### Clubs
+- `GET /api/clubs` - Get all clubs
+- `POST /api/clubs` - Create club
+- `GET /api/clubs/:id` - Get club details
+- `PUT /api/clubs/:id` - Update club
+- `DELETE /api/clubs/:id` - Delete club
+
+### Events
+- `GET /api/events` - Get all events
+- `POST /api/events` - Create event
+- `GET /api/events/:id` - Get event details
+- `PUT /api/events/:id` - Update event
+- `DELETE /api/events/:id` - Delete event
+
+### Participation
+- `POST /api/participation` - Register participation
+- `PUT /api/participation/:id` - Update participation status
+- `GET /api/participation/student/:studentId` - Get student participation history
+
+### Messages
+- `GET /api/messages` - Get messages
+- `POST /api/messages` - Send message
+- `GET /api/messages/:id` - Get conversation
+- `DELETE /api/messages/:id` - Delete message
+
+### Counsellor Requests
+- `GET /api/requests` - Get all requests
+- `POST /api/requests` - Create request
+- `PUT /api/requests/:id` - Update request status
+- `GET /api/requests/student/:studentId` - Get student requests
+
+### AI Insights
+- `GET /api/ai/insights` - Get AI insights for students
+- `POST /api/ai/insights` - Generate new insights
+
+### NAAC
+- `GET /api/naac` - Get NAAC dashboard data
+- `GET /api/naac/evidence` - Get evidence documents
+- `POST /api/naac/evidence` - Upload evidence
+- `PUT /api/naac/evidence/:id` - Update evidence
+
+### Policies
+- `GET /api/admin/policies` - Get all policies
+- `POST /api/admin/policies` - Create policy
+- `PUT /api/admin/policies/:id` - Update policy
+- `DELETE /api/admin/policies/:id` - Delete policy
+
+### Club Management
+- `GET /api/clubs/:id/members` - Get club members
+- `POST /api/clubs/:id/members` - Add member
+- `DELETE /api/clubs/:id/members/:memberId` - Remove member
+- `GET /api/clubs/:id/feed` - Get club feed
+- `POST /api/clubs/:id/feed` - Post to club feed
+
+### Student Twin
+- `GET /api/twins/:studentId` - Get matched twins
+- `POST /api/twins/match` - Generate new matches
+
+## ⚙️ Configuration
+
+### Database Configuration
+
+Edit `backend/config/db.js` to modify database connection settings:
+
+```javascript
+const db = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'mysql',
+  database: process.env.DB_NAME || 'institution_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+```
+
+### JWT Configuration
+
+The JWT secret is configured in `.env` file. Change it in production:
+
+```env
+JWT_SECRET=your_super_secret_key_here_min_32_chars
+```
+
+### Vite Configuration
+
+Frontend Vite settings are in `frontend/vite.config.js`. The default API base URL is configured in `frontend/src/api/axios.js`.
+
+## 📚 Detailed Project Structure
+
+### Frontend Components
+
+- **Layout Components**: Header, Footer, AuthLayout, DashboardLayout, PublicLayout
+- **UI Components**: Button, Card, Input, Badge, Table (reusable components)
+- **Feedback Components**: Alert, Loader
+- **Chat Components**: ChatLauncher, SyllabusChat (AI chat interfaces)
+
+### Student Pages
+
+- Dashboard (Overview and statistics)
+- Events (Browse and register for events)
+- Counsellor Requests (Submit and track requests)
+- Faculty List (Browse and contact faculty)
+- Messages (Direct messaging)
+- Club Feed (View club activities)
+
+### Faculty Pages
+
+- Dashboard (Overview of assigned students)
+- Requests (Manage counsellor requests)
+- Students (List and profile view of assigned students)
+- Club Events (Manage club events)
+- AI Insights (View student insights)
+- Student Twin Matching (View similar students)
+
+### Admin Pages
+
+- Dashboard (System statistics)
+- Reports (Generate institutional reports)
+- Students (Manage all students)
+- Faculty (Manage all faculty)
+- Events (Manage all events)
+- Policies (Create and manage policies)
+- NAAC Dashboard (Accreditation compliance)
+
+### Club Pages
+
+- Dashboard (Overview)
+- Members (Membership management)
+- Events (Event management)
+- Messages (Club communications)
+- Feed (Club announcements)
+
+### Backend Controllers
+
+Each controller handles specific business logic:
+- `studentController.js` - Student CRUD and profile management
+- `facultyController.js` - Faculty management
+- `clubController.js` - Club operations
+- `eventController.js` - Event management
+- `participationController.js` - Event participation tracking
+- `messageController.js` - Messaging system
+- `counsellorRequestController.js` - Counselling request handling
+- `aiInsightsController.js` - AI-driven student insights
+- `naacController.js` - Accreditation management
+- `twinController.js` - Student matching algorithm
+- `authController.js` - Authentication and authorization
+- `adminController.js` - Admin operations
+
+## 🤖 AI Service Details
+
+### Ollama Integration
+
+The AI service uses Ollama with Llama 3.2:3B model for generating insights:
+
+1. **Message Fetching**: Retrieves student messages from the past 7 days
+2. **Sentiment Analysis**: Analyzes message sentiment and tone
+3. **Topic Extraction**: Identifies dominant topics in communications
+4. **Risk Scoring**: Calculates risk scores based on engagement patterns
+5. **Insight Generation**: Generates personalized recommendations
+
+### Running the AI Service
+
+1. Install Ollama from [https://ollama.ai](https://ollama.ai)
+2. Pull the model: `ollama pull llama3.2:3b`
+3. Run Ollama: `ollama serve`
+4. Start the AI service: `python -m uvicorn app:app --reload`
+
+## 🧪 Testing
+
+### Frontend Testing
+
+```bash
+cd frontend
+npm run lint
+# ESLint will check code quality
+```
+
+### Backend Testing
+
+```bash
+cd backend
+# Add test script in package.json if needed
+npm test
+```
+
+## 📦 Build & Deployment
+
+### Frontend Build
+
+```bash
+cd frontend
+npm run build
+# Creates optimized build in dist/
+```
+
+### Backend Deployment
+
+The backend can be deployed to:
+- Heroku
+- Railway
+- Fly.io
+- Traditional VPS
+
+### AI Service Deployment
+
+The FastAPI service can be containerized with Docker:
+
+```dockerfile
+FROM python:3.9
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0"]
+```
+
+## 📝 Database Schema
+
+The database includes the following main tables:
+- `ADMIN` - Admin users
+- `FACULTY` - Faculty members
+- `STUDENT` - Student profiles
+- `DEPT` - Departments
+- `LOGIN` - Authentication credentials
+- `CLUB` - Club information
+- `CLUB_MEMBERSHIP` - Club memberships
+- `EVENT` - Events
+- `PARTICIPATION` - Event participation
+- `MESSAGE` - Direct messages
+- `COUNSELLOR_REQUEST` - Counselling requests
+- `NAAC_EVIDENCE` - Accreditation documents
+- `STUDENT_TWIN` - Student matching pairs
+- `POLICY` - Institution policies
+- `AI_INSIGHTS` - Generated AI insights
+- `CLUB_FEED` - Club social feed
+
+See `init.sql` for complete schema.
+
+## 🔒 Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Password Hashing**: bcrypt.js for password security
+- **Role-Based Access Control**: Different permission levels for different roles
+- **CORS Protection**: Cross-origin request validation
+- **Input Validation**: Server-side validation of all inputs
+- **File Upload Security**: Multer configuration for safe file handling
+
+## 📄 License
+
+This project is licensed under the ISC License.
+
+## 👥 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-### Policy Violations Dashboard
-
-* Live violations table
-* Shows:
-
-  * Target
-  * Current value
-  * Threshold
-  * Detection timestamp
-* Automatically clears resolved violations
-
----
-
-## 🔔 Messaging System
-
-* Student ↔ Faculty chat
-* Timestamped messages
-* Sender distinction
-* Unread tracking
-
----
-
-## 🧠 Digital Twin System
-
-* Per-student behavioral model
-* Tracks:
-
-  * Engagement
-  * Risk
-  * Performance
-* Accessible to faculty
-
----
-
-## 📊 Data Integrity & Auditability
-
-* Every action logged via timestamps
-* No silent overwrites
-* Policy violations preserved with status history
-
----
-
-## 🔒 Security Highlights
-
-* JWT authentication
-* Role-based middleware
-* Server-side validation
-* Protected routes
-* No client-side trust
-
----
+**Last Updated**: February 2026
+**Version**: 1.0.0
