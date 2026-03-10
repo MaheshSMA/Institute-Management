@@ -11,6 +11,15 @@ INSERT INTO DEPT (Dept_code, Dept_name) VALUES
 ('AI',  'Artificial Intelligence and Machine Learning');
 
 -- =====================
+-- ADMIN
+-- =====================
+
+INSERT INTO ADMIN
+(Admin_name, Admin_email, Password)
+VALUES
+('Super Admin', 'admin@college.edu', '$2a$10$hashedpassword');
+
+-- =====================
 -- FACULTY
 -- =====================
 
@@ -29,20 +38,11 @@ INSERT INTO STUDENT
 (Student_name, USN, DOB, Year, Dept_code, Student_email, Activity_pts, Supervised_by)
 VALUES
 ('Mahesh', '1RV23AI001', '2003-05-10', 3, 'AI',  'mahesh@rvce.edu', 20, 1),
-('Rahul',  '1RV22EC002', '2002-11-21', 4, 'ECE', 'rahul@rvce.edu',  15, 2),
-('Anita',  '1RV24ME003', '2003-01-15', 2, 'ME',  'anita@rvce.edu',   0, NULL);
+('Rahul',  '1RV22EC002', '2002-11-21', 4, 'ECE', 'rahul@rvce.edu', 15, 2),
+('Anita',  '1RV24ME003', '2003-01-15', 2, 'ME',  'anita@rvce.edu', 0, NULL);
 
 -- =====================
--- ADMIN
--- =====================
-
-INSERT INTO ADMIN
-(Admin_name, Admin_email, Password)
-VALUES
-('Super Admin', 'admin@college.edu', '$2a$10$hashedpassword');
-
--- =====================
--- LOGIN
+-- LOGIN TABLE
 -- =====================
 
 INSERT INTO LOGIN
@@ -53,6 +53,7 @@ VALUES
 ('anita@rvce.edu',  'pass123', 'Student', 3),
 ('sharma@college.edu', '$2a$10$hash', 'Faculty', 1),
 ('mehta@college.edu',  '$2a$10$hash', 'Faculty', 2),
+('rao@college.edu',    '$2a$10$hash', 'Faculty', 3),
 ('admin@college.edu',  '$2a$10$hash', 'Admin',   1);
 
 -- =====================
@@ -64,16 +65,6 @@ INSERT INTO CLUB
 VALUES
 ('Coding Club',   'Programming and Hackathons', 2),
 ('Robotics Club', 'Robotics and Automation',    3);
-
--- =====================
--- EVENTS
--- =====================
-
-INSERT INTO EVENT
-(Event_name, Description, Duration, Club_id)
-VALUES
-('Hackathon',      '24-hour coding event', '1 Day', 1),
-('Robotics Expo',  'Robot showcase',        '2 Days', 2);
 
 -- =====================
 -- CLUB MEMBERSHIP
@@ -98,7 +89,7 @@ VALUES
 (3, 2, 'Registered','Participant', 0);
 
 -- =====================
--- COUNSELLOR & ACTIVITY REQUESTS
+-- COUNSELLOR REQUESTS
 -- =====================
 
 INSERT INTO COUNSELLOR_REQUEST
@@ -128,15 +119,15 @@ VALUES
 ('Max Counsellor Load', 'MAX_COUNSELLOR_LOAD', 'Faculty', 30);
 
 -- =====================
--- STUDENT AI INSIGHTS
+-- AI INSIGHTS
 -- =====================
 
 INSERT INTO STUDENT_AI_INSIGHTS
 (Student_id, summary_text, engagement_level, risk_score, risk_explanation)
 VALUES
 (1, 'Active participant in clubs and events', 'High', 0.12, 'Consistent engagement'),
-(2, 'Moderate engagement in academics',       'Medium', 0.35, 'Limited co-curricular activity'),
-(3, 'Low engagement detected',                'Low', 0.62, 'Minimal participation');
+(2, 'Moderate engagement in academics', 'Medium', 0.35, 'Limited co-curricular activity'),
+(3, 'Low engagement detected', 'Low', 0.62, 'Minimal participation');
 
 -- =====================
 -- DIGITAL TWIN
@@ -148,3 +139,19 @@ VALUES
 (1, 'Engaged', NOW()),
 (2, 'Stable',  NOW()),
 (3, 'At-Risk', NOW());
+
+INSERT INTO DEPT (Dept_code, Dept_name) VALUES
+('ISE', 'Information Science and Engineering'),
+('DS',  'Data Science'),
+('CY',  'Cyber Security'),
+
+('EEE', 'Electrical and Electronics Engineering'),
+('ETE', 'Electronics and Telecommunication Engineering'),
+
+('CE',  'Civil Engineering'),
+('CHE', 'Chemical Engineering'),
+('BT',  'Biotechnology'),
+('AE',  'Aerospace Engineering'),
+
+('MCA', 'Master of Computer Applications'),
+('ARCH','Architecture');
