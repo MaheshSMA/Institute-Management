@@ -99,9 +99,6 @@ function FacultyStudents() {
                 <th className="px-5 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
                   Activity Points
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                  Digital Twin
-                </th>
               </tr>
             </thead>
 
@@ -149,18 +146,6 @@ function FacultyStudents() {
 
                   <td className="px-5 py-4 text-sm font-semibold text-blue-800">
                     {stu.Activity_pts}
-                  </td>
-
-                  <td className="px-5 py-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // 🚨 VERY IMPORTANT
-                        navigate(`/faculty/students/${stu.Student_id}/twin`);
-                      }}
-                      className="text-sm text-blue-700 hover:underline font-medium"
-                    >
-                      View Twin →
-                    </button>
                   </td>
                 </tr>
               ))}

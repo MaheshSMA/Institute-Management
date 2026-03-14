@@ -7,7 +7,6 @@ import {
   LogOut,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Shield } from "lucide-react";
 import React from "react";  
 
 function AdminDashboard() {
@@ -37,18 +36,6 @@ function AdminDashboard() {
       desc: "Analytics & institutional summaries",
       icon: <BarChart3 size={22} />,
       path: "/admin/reports",
-    },
-    {
-    title: "Policies",
-    desc: "Institutional rules & enforcement",
-    icon: <Shield size={22} />,
-    path: "/admin/policies",
-    },
-    {
-      title: "NAAC & Accreditation",
-      desc: "Criteria tracking, compliance & readiness",
-      icon: <BarChart3 size={22} />,
-      path: "/admin/naac",
     },
 
   ];

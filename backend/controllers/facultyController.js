@@ -234,7 +234,7 @@ const getAssignedStudents = async (req, res) => {
 
       LEFT JOIN MESSAGE m
         ON m.Student_id = s.Student_id
-        AND m.Faculty_id = ?
+        AND m.Fac_id = ?
 
       WHERE s.Supervised_by = ?
       GROUP BY s.Student_id

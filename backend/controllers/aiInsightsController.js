@@ -44,7 +44,7 @@ const getFacultyAIInsights = async (req, res) => {
         ',', 1
       ) AS last_sender
     FROM MESSAGE
-    WHERE Faculty_id = ?
+    WHERE Fac_id = ?
     GROUP BY Student_id
   ) msg ON msg.Student_id = s.Student_id
 

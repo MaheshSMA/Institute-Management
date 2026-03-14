@@ -17,10 +17,6 @@ const participationRoutes = require('./routes/participationRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const aiInsightsRoutes = require('./routes/aiInsightsRoutes'); // 🔥 ADD THIS
-const policyRoutes = require("./routes/policyRoutes");
-const twinRoutes = require("./routes/twinRoutes");
-const naacRoutes = require("./routes/naacRoutes");
-const naacEvidenceRoutes = require("./routes/naacEvidenceRoutes");
 // const clubEventRoutes = require("./routes/clubEventRoutes");
 const clubMembershipRoutes = require("./routes/clubMembershipRoutes");
 const clubFeedRoutes = require("./routes/clubFeedRoutes");
@@ -38,7 +34,6 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.json({ message: 'Institution Management Backend is running 🚀' });
 });
-app.use("/api/admin/policies", policyRoutes);
 
 // ================= API ROUTES =================
 app.use('/api/students', studentRoutes);
@@ -50,9 +45,6 @@ app.use('/api/events', eventRoutes);
 app.use('/api/participation', participationRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/twin", twinRoutes);
-app.use("/api/naac/evidence", naacEvidenceRoutes); // 👈 MOVE UP
-app.use("/api/naac", require("./routes/naacRoutes"));
 // app.use("/api/clubs", clubEventRoutes);
 app.use("/api/clubs", clubMembershipRoutes);
 app.use("/api/clubs", clubFeedRoutes);

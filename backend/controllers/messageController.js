@@ -47,7 +47,7 @@ const getMessages = async (req, res) => {
     const [messages] = await db.query(
       `SELECT *
        FROM MESSAGE
-       WHERE Student_id = ? AND Faculty_id = ?
+       WHERE Student_id = ? AND Fac_id = ?
        ORDER BY Created_At ASC`,
       [studentId, facultyId]
     );
@@ -176,7 +176,7 @@ const sendMessage = async (req, res) => {
 
     await db.query(
       `INSERT INTO MESSAGE
-       (Student_id, Faculty_id, Sender, Content)
+       (Student_id, Fac_id, Sender, Content)
        VALUES (?, ?, ?, ?)`,
       [studentId, facultyId, sender, content.trim()]
     );

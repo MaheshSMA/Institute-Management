@@ -35,7 +35,6 @@ import FacultyClubEvents from "./pages/faculty/FacultyClubEvents";
 import FacultyStudentProfile from "./pages/faculty/FacultyStudentProfile";
 import FacultyClubDashboard from "./pages/faculty/FacultyClubDashboard";
 import FacultyAIInsights from "./pages/faculty/FacultyAIInsights";
-import FacultyStudentTwin from "./pages/faculty/FacultyStudentTwin";
 
 /* -------- Admin Pages -------- */
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -43,8 +42,6 @@ import AdminReports from "./pages/admin/AdminReports";
 import AdminStudents from "./pages/admin/AdminStudents";
 import AdminFaculty from "./pages/admin/AdminFaculty";
 import AdminEvents from "./pages/admin/AdminEvents";
-import AdminPolicies from "./pages/admin/AdminPolicies";
-import AdminNAACDashboard from "./pages/admin/AdminNAACDashboard";
 import StudentClubFeed from "./pages/student/StudentClubFeed";
 import ClubDashboard from "./pages/club/ClubDashboard";
 // import ClubEvents from "./pages/club/ClubEvents";
@@ -98,7 +95,6 @@ function App() {
             <AdminLogin />
         }
         />
-        <Route path="/admin/policies" element={<AdminPolicies />} />
         <Route path="/club/events" element={<ManageEvents />} />
         <Route
             path="/club/events/edit/:eventId"
@@ -223,10 +219,6 @@ function App() {
         }
       />
       <Route
-        path="/faculty/students/:studentId/twin"
-        element={<FacultyStudentTwin />}
-      />
-      <Route
         path="/faculty/club-events"
         element={
           <DashboardLayout>
@@ -296,10 +288,6 @@ function App() {
             <ClubDashboard />
           </DashboardLayout>
         } 
-      />
-      <Route
-        path="/admin/naac"
-        element={<AdminNAACDashboard />}
       />
       {/* <Route path="/club/events" element={<ClubEvents />} /> */}
     </Routes>
